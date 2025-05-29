@@ -1,0 +1,109 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Models\RoleMapping;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
+class SupervisorController extends Controller
+{
+    public function index()
+    {
+        $supervisors = User::whereHas('roles', function ($query) {
+            $query->where('role_name', 'Supervisor');
+        })->get();
+
+        return response()->json([
+            'response code' => 200,
+            'data' => $supervisors,
+            'status' => true,
+            'message' => 'Supervisor fetched successfully!',
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        //dd($request->all());
+        $validate = Validator::make($request->all(), [
+            'name'          => 'required|string',
+            'mobile_no'     => 'required|numeric|digits:10',
+            'email'         => 'required|email|unique:users,email',
+        ]);
+
+         if ($validate->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+
+        $supervisor = User::create([
+            'name' => $request->name,
+            'mobile_no' => $request->mobile_no,
+            'email' => $request->email,
+            'password' => Hash::make('supervisor@123')
+        ]);
+
+        $supervisorId = $supervisor->id;
+
+        $role_mapping = RoleMapping::create([
+            'user_id' => $supervisorId,
+            'role_id' => 2
+        ]);
+
+        return response()->json([
+            'response code' => 200,
+            'data' => $supervisor,
+            'status' => true,
+            'message' => 'Supervisor created successfully!',
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validate = Validator::make($request->all(), [
+            'name'          => 'required|string',
+            'mobile_no'     => 'required|numeric|digits:10',
+            'email' => 'required|email',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+
+        $supervisor = User::findOrFail($id);
+
+        $supervisor->update([
+            'name'  => $request->name,
+            'mobile_no' => $request->mobile_no,
+            'email' => $request->email
+        ]);
+
+        return response()->json([
+            'response code' => 200,
+            'data' => $supervisor,
+            'status' => true,
+            'message' => 'Supervisor updated successfully!',
+        ]);
+    }
+
+    public function delete($id)
+    {
+        $supervisor = User::findOrFail($id);
+        $supervisor->delete();
+
+        return response()->json([
+            'response code' => 200,
+            'data' => $supervisor,
+            'status' => true,
+            'message' => 'Supervisor deleted successfully!',
+        ]);
+    }
+}

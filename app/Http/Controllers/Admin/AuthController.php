@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
+class AuthController extends Controller
+{
+    public function showLoginForm()
+    {
+        return view('admin.login');
+    }
+
+    public function adminlogin(Request $request)
+    {
+        //dd($request->all());
+        $validate = Validator::make($request->all(), [
+            'mobile_no' => 'required|numeric|digits:10',
+            'password'  => 'required|min:6'
+        ]);
+
+        if ($validate->fails()) {
+            return redirect()->back()->withErrors($validate)->withInput();
+        }
+
+        $user = User::where('mobile_no', $request->mobile_no)->first();
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            session(['role_name' => $user->roles->first()->role_name]);
+            Auth::guard('admin')->login($user);
+            return redirect()->route('admin.dashboard');
+        }
+
+        return back()->withErrors(['error' => 'Invalid credentials']);
+    }
+ 
+    public function adminLogout()
+    {
+        Auth::guard('admin')->logout();
+        return redirect()->route('admin.login');
+    }
+}

@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Customer extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'site_id',
+        'name',
+        'mobile_no',
+        'email',
+        'dob',
+        'marriage_date',
+        'address',
+        'is_inactive'
+    ];
+
+    public function site()
+    {
+        return $this->belongsTo(Site::class, 'site_id');
+    }
+}
+
