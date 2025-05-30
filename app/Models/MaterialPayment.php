@@ -19,7 +19,9 @@ class MaterialPayment extends Model
         'settled_amount',
         'pending_amount',
         'remarks',
-        'status'
+        'status',
+        'created_by',
+        'updated_by'
     ];
 
     public function site()

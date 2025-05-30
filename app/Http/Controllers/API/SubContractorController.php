@@ -82,6 +82,7 @@ class SubContractorController extends Controller
             'date' => $date,
             'amount' => $request->amount,
             'remarks' => $request->remarks,
+            'created_by' => auth('api')->id(),
         ]);
 
         return response()->json([
@@ -163,7 +164,8 @@ class SubContractorController extends Controller
             'name' => $request->name,
             'payment' => $request->payment,
             'date' => $date,
-            'payment_mode' => $request->payment_mode
+            'payment_mode' => $request->payment_mode,
+            'created_by' => auth('api')->id(),
         ]);
 
          return response()->json([

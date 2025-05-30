@@ -56,7 +56,8 @@ class CustomerController extends Controller
             'email' => $request->email,
             'dob' => $dob,
             'marriage_date' => $marriage_date,
-            'address' => $request->address
+            'address' => $request->address,
+            'updated_by' => auth('api')->id(),
         ]);
 
         return response()->json([

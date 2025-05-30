@@ -18,7 +18,9 @@ class MaterialOrder extends Model
         'unit',
         'price',
         'available_unit_count',
-        'status'
+        'status',
+        'created_by',
+        'updated_by'
     ];
 
     public function site()

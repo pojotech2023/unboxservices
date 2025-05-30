@@ -63,7 +63,8 @@ class OtherUtilitiesSubController extends Controller
             'site_id' => $request->site_id,
             'amount' => $request->amount,
             'remarks' => $request->remarks,
-            'image' => $imagePath
+            'image' => $imagePath,
+            'created_by' => auth('api')->id(),
         ]);
 
         return response()->json([

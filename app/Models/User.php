@@ -21,10 +21,10 @@ class User extends Authenticatable
         'name',
         'mobile_no',
         'email',
-        'gender',
-        'company_name',
-        'designation',
         'password',
+        'image',
+        'created_by',
+        'updated_by'
     ];
 
     /**
@@ -33,7 +33,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
+
         'remember_token',
     ];
 
@@ -50,5 +50,10 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Roles::class, 'role_mappings', 'user_id', 'role_id');
+    }
+
+    public function deviceToken()
+    {
+        return $this->hasMany(DeviceToken::class, 'user_id');
     }
 }

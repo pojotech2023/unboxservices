@@ -15,7 +15,9 @@ class Vendor extends Model
         'mobile_no',
         'email',
         'address',
-        'gst'
+        'gst',
+        'created_by',
+        'updated_by'
     ];
 
     public function materialRequests()

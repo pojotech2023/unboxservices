@@ -13,7 +13,9 @@ class OtherUtilities extends Model
         'site_id',
         'amount',
         'remarks',
-        'image'
+        'image',
+        'created_by',
+        'updated_by'
     ];
 
     public function site()

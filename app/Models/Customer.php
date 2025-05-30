@@ -17,7 +17,9 @@ class Customer extends Model
         'dob',
         'marriage_date',
         'address',
-        'is_inactive'
+        'is_inactive',
+        'created_by',
+        'updated_by'
     ];
 
     public function site()

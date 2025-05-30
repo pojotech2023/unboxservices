@@ -41,6 +41,7 @@ class GenerateQuotationController extends Controller
             'subject' => $request->subject,
             'date' => $date,
             'mobile_no' => $request->mobile_no,
+            'created_by' => auth('api')->id(),
         ]);
 
         $totalAmount = 0;
@@ -57,6 +58,7 @@ class GenerateQuotationController extends Controller
                 'rate' => $rate,
                 'sqFt' => $sqFt,
                 'total_cost' => $total,
+                'created_by' => auth('api')->id(),
             ]);
         }
 

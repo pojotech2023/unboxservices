@@ -18,7 +18,9 @@ class MaterialRequest extends Model
         'delivery_needed_by',
         'amount',
         'remarks',
-        'status'
+        'status',
+        'created_by',
+        'updated_by'
     ];
 
     public function site()

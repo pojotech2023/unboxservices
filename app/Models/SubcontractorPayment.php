@@ -14,7 +14,9 @@ class SubcontractorPayment extends Model
         'name',
         'payment',
         'date',
-        'payment_mode'
+        'payment_mode',
+        'created_by',
+        'updated_by'
     ];
 
 }

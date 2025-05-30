@@ -51,7 +51,8 @@ class PropertyController extends Controller
             'type' => $request->type,
             'amount' => $request->amount,
             'remarks' => $request->remarks,
-            'image' => $imagePath
+            'image' => $imagePath,
+            'created_by' => auth('api')->id(),
         ]);
 
         // $message = "New Property Added\n" .

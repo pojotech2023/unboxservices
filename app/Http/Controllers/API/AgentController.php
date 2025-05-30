@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AgentController extends Controller
 {
-     public function index()
+    public function index()
     {
         $agents = Agent::where('is_inactive', 0)
             ->orderBy('id', 'desc')->get();
@@ -24,7 +24,7 @@ class AgentController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $validate = Validator::make($request->all(), [
             'name' => 'required',
             'company_name' => 'required',
@@ -41,7 +41,9 @@ class AgentController extends Controller
         $agent = Agent::create([
             'name' => $request->name,
             'company_name' => $request->company_name,
-            'mobile_no' => $request->mobile_no
+            'mobile_no' => $request->mobile_no,
+            'created_by' => auth('api')->id(),
+
         ]);
 
         return response()->json([
@@ -72,7 +74,9 @@ class AgentController extends Controller
         $agent->update([
             'name'      => $request->name,
             'company_name' => $request->company_name,
-            'mobile_no' => $request->mobile_no
+            'mobile_no' => $request->mobile_no,
+            'updated_by' => auth('api')->id(),
+
         ]);
 
         return response()->json([

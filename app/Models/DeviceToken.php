@@ -5,21 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Wages extends Model
+class DeviceToken extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'site_id',
-        'category',
-        'amount',
-        'date',
+     protected $fillable=[
+        'user_id',
+        'device_token',
+        'device_type',
         'created_by',
         'updated_by'
     ];
 
-    public function site()
+      public function user()
     {
-        return $this->belongsTo(Site::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

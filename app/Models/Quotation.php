@@ -14,7 +14,9 @@ class Quotation extends Model
         'date',
         'mobile_no',
         'subject',
-        'total_amount'
+        'total_amount',
+        'created_by',
+        'updated_by'
     ];
 
     public function quotationDetail()

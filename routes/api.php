@@ -5,10 +5,14 @@ use App\Http\Controllers\API\AttendanceController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BricksController;
 use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\API\DeviceTokenController;
 use App\Http\Controllers\API\GenerateQuotationController;
 use App\Http\Controllers\API\MaterialController;
+use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\OtherUtilitiesController;
 use App\Http\Controllers\API\OtherUtilitiesSubController;
+use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\PropertyController;
 use App\Http\Controllers\API\SiteController;
 use App\Http\Controllers\API\SubContractorController;
@@ -38,7 +42,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
+//test
+Route::post('/send-notification', [NotificationController::class, 'send']);
+
 Route::middleware('auth:sanctum')->group(function () {
+
+  //Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'getDashboard']);
+
+  //Device Token Store
+  Route::post('/save-device-token', [DeviceTokenController::class, 'store']);
 
   //Sites
   Route::get('/site-management', [SiteController::class, 'index']);
@@ -110,4 +123,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
   //Quotation
   Route::post('/quotation-add', [GenerateQuotationController::class, 'store']);
+
+  //Profile setting
+  Route::get('/profile', [ProfileController::class, 'show']);
+  Route::post('/profile-update', [ProfileController::class, 'update']);
 });

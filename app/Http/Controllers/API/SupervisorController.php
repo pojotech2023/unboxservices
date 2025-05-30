@@ -32,9 +32,10 @@ class SupervisorController extends Controller
             'name'          => 'required|string',
             'mobile_no'     => 'required|numeric|digits:10',
             'email'         => 'required|email|unique:users,email',
+            'password'      => 'required|min:8|confirmed'
         ]);
 
-         if ($validate->fails()) {
+        if ($validate->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validate->errors()
@@ -45,7 +46,8 @@ class SupervisorController extends Controller
             'name' => $request->name,
             'mobile_no' => $request->mobile_no,
             'email' => $request->email,
-            'password' => Hash::make('supervisor@123')
+            'password' => Hash::make($request->password),
+            'created_by' => auth('api')->id(),
         ]);
 
         $supervisorId = $supervisor->id;
@@ -68,7 +70,8 @@ class SupervisorController extends Controller
         $validate = Validator::make($request->all(), [
             'name'          => 'required|string',
             'mobile_no'     => 'required|numeric|digits:10',
-            'email' => 'required|email',
+            'email'         => 'required|email',
+            'password'      => 'required|min:8|confirmed'
         ]);
 
         if ($validate->fails()) {
@@ -83,7 +86,9 @@ class SupervisorController extends Controller
         $supervisor->update([
             'name'  => $request->name,
             'mobile_no' => $request->mobile_no,
-            'email' => $request->email
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'updated_by' => auth('api')->id(),
         ]);
 
         return response()->json([

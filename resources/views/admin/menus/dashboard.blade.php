@@ -125,7 +125,11 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
         <script>
+            //Dashboard
             const backgroundColors = ["#f3545dcc", "#58ef5d", "#1d7af3b8"];
             const chartLabels = ["Pending Amount", "Settled Amount", "Total Value"];
             const chartData = @json($charts);
@@ -176,6 +180,63 @@
             // Auto trigger filter for default "New" on page load
             window.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("statusFilter").dispatchEvent(new Event("change"));
+            });
+
+            //Notification
+            var firebaseConfig = {
+                apiKey: "AIzaSyCg6tQTIT4wUGbq11ytDlH87wkm6Cc8SOY",
+                authDomain: "vallihomesnotification.firebaseapp.com",
+                projectId: "vallihomesnotification",
+                storageBucket: "vallihomesnotification.firebasestorage.app",
+                messagingSenderId: "676932022184",
+                appId: "1:676932022184:web:ca6a2c686b437e7d41379d"
+            };
+            firebase.initializeApp(firebaseConfig);
+
+            const messaging = firebase.messaging();
+
+            // Step 1: Register service worker first
+            navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                .then(function(registration) {
+                    console.log('Service worker registered');
+
+                    messaging.useServiceWorker(registration); // very important
+
+                    // Step 2: Ask permission and get token
+                    return messaging.getToken({
+                        vapidKey: 'BPSa2mK8Yjw_S_vZjTUXx_Ti97jwfx-fdx1Y3x1etjCTj2qheSVRxjda8ti_XHWfNgKQrI7iVWhA1OlOxNku1QU'
+                    });
+                })
+                .then(function(token) {
+                    console.log("Device Token:", token);
+
+                    // Step 3: Send token to backend
+                    return fetch("{{ route('save.device.token') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            token
+                        })
+                    });
+                })
+                .catch(function(err) {
+                    console.error("Service Worker / Permission Error:", err);
+                });
+
+            // Foreground notifications
+            messaging.onMessage(function(payload) {
+                console.log("Foreground Notification Received: ", payload);
+
+                const {
+                    title,
+                    body
+                } = payload.notification;
+                new Notification(title, {
+                    body: body
+                });
             });
         </script>
     @endsection

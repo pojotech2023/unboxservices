@@ -15,7 +15,9 @@ class Subcontractor extends Model
         'name',
         'date',
         'amount',
-        'remarks'
+        'remarks',
+        'created_by',
+        'updated_by'
     ];
 
     public function site()

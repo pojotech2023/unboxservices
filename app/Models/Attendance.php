@@ -13,6 +13,8 @@ class Attendance extends Model
         'site_id',
         'category',
         'count',
-        'date'
+        'date',
+        'created_by',
+        'updated_by'
     ];
 }

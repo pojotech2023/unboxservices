@@ -49,7 +49,8 @@ class VendorController extends Controller
             'mobile_no' => $request->mobile_no,
             'email' => $request->email,
             'address' => $request->address,
-            'gst' => $request->gst
+            'gst' => $request->gst,
+            'created_by' => auth('api')->id(),
         ]);
 
         return response()->json([
@@ -86,7 +87,8 @@ class VendorController extends Controller
             'mobile_no' => $request->mobile_no,
             'email'  => $request->email,
             'address'  => $request->address,
-            'gst' => $request->gst
+            'gst' => $request->gst,
+            'updated_by' => auth('api')->id(),
         ]);
 
         return response()->json([

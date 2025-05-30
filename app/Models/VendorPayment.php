@@ -13,7 +13,9 @@ class VendorPayment extends Model
         'vendor_id',
         'payment',
         'date',
-        'payment_mode'
+        'payment_mode',
+        'created_by',
+        'updated_by'
     ];
 
     public function vendor()

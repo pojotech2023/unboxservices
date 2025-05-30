@@ -114,7 +114,8 @@ class MaterialController extends Controller
             'unit'                => $request->unit,
             'delivery_needed_by'  => $request->delivery_needed_by,
             'amount'              => $request->amount,
-            'remarks'             => $request->remarks
+            'remarks'             => $request->remarks,
+            'created_by'          => auth('api')->id(),
         ]);
 
         return response()->json([
@@ -153,7 +154,8 @@ class MaterialController extends Controller
             'quantity' => $request->quantity,
             'unit' => $request->unit,
             'price' => $request->price,
-            'available_unit_count' => $request->available_unit_count
+            'available_unit_count' => $request->available_unit_count,
+            'created_by' => auth('api')->id(),
         ]);
 
         $paydetail = VendorPayDetail::where('vendor_id', $request->vendor_id)->first();

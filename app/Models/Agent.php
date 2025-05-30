@@ -13,6 +13,8 @@ class Agent extends Model
         'name',
         'company_name',
         'mobile_no',
-        'is_inactive'
+        'is_inactive',
+        'created_by',
+        'updated_by'
     ];
 }

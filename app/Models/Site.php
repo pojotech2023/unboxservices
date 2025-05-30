@@ -19,7 +19,9 @@ class Site extends Model
         'pending_amnt',
         'expense',
         'status',
-        'is_inactive'
+        'is_inactive',
+        'created_by',
+        'updated_by'
     ];
 
     public function customer()

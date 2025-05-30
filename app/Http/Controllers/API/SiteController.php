@@ -9,11 +9,16 @@ use Illuminate\Http\Request;
 class SiteController extends Controller
 {
     //site management list
-    public function index()
+    public function index(Request $request)
     {
-        $sites = Site::with('customer')
-            ->where('is_inactive', 0)
-            ->orderBy('id', 'desc')->get();
+        $query = Site::with('customer')
+            ->where('is_inactive', 0);
+
+            if($request->has('status') && $request->status !== 'All'){
+                $query->where('status', $request->status);
+            }
+
+            $sites = $query->orderBy('id', 'desc')->get();
 
         return response()->json([
             'response code' => 200,

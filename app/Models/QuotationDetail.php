@@ -13,7 +13,9 @@ class QuotationDetail extends Model
         'particular',
         'rate',
         'sqFt',
-        'total_cost'
+        'total_cost',
+        'created_by',
+        'updated_by'
     ];
     public function quotation()
     {

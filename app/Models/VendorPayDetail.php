@@ -15,7 +15,9 @@ class VendorPayDetail extends Model
         'total_units',
         'total_unit_price',
         'balance_amount',
-        'paid_amount'
+        'paid_amount',
+        'created_by',
+        'updated_by'
     ];
 
     public function vendor()

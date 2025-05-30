@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BricksController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DeviceTokenController;
 use App\Http\Controllers\Admin\Material\SandController;
 use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\OtherUtilitiesController;
@@ -54,6 +55,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm']);
     Route::post('/login', [AuthController::class, 'adminLogin'])->name('admin.login');
     Route::post('/logout', [AuthController::class, 'adminLogout'])->name('admin.logout');
+
+    Route::post('/save-device-token', [DeviceTokenController::class, 'store'])->name('save.device.token');
 
     Route::middleware(['auth:admin', 'checkUserRole:Admin,Supervisor'])->group(function () {
 

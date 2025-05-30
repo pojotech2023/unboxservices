@@ -16,6 +16,8 @@ class Property extends Model
         'amount',
         'remarks',
         'image',
-        'is_inactive'
+        'is_inactive',
+        'created_by',
+        'updated_by'
     ];
 }
