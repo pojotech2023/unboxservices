@@ -137,13 +137,13 @@ class MaterialController extends Controller
             'price' => 'required'
         ]);
 
-       if ($validate->fails()) {
+        if ($validate->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validate->errors()
             ], 422);
         }
-        
+
         $date = Carbon::createFromFormat('d-m-Y', $request->date)->format('Y-m-d');
 
         $materialOrder = MaterialOrder::create([
@@ -168,6 +168,14 @@ class MaterialController extends Controller
                 'total_units'  => $newUnits,
                 'total_unit_price' => $newTotalUnitPrice,
                 'balance_amount' => $newBalanaceAmount
+            ]);
+        } else {
+            VendorPayDetail::create([
+                'vendor_id'         => $request->vendor_id,
+                'total_units' => $request->quantity,
+                'total_unit_price' => $request->price,
+                'balance_amount'  => $request->price,
+                'created_by' => auth('api')->id(),
             ]);
         }
 

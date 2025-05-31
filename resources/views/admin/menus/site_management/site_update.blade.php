@@ -110,7 +110,7 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="text" name="value" id="value" class="form-control"
+                                                <input type="number" name="value" id="value" class="form-control no-arrow" min="0" step="1"
                                                     value="{{ old('value', $site->value ?? '') }}">
                                             </div>
                                             @error('value')
@@ -144,8 +144,8 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="text" name="settled_amnt" id="value"
-                                                    class="form-control"
+                                                <input type="number" name="settled_amnt" id="value"
+                                                    class="form-control no-arrow" min="0" step="1"
                                                     value="{{ old('settled_amnt', $site->settled_amnt ?? '') }}">
                                             </div>
                                             @error('settled_amnt')
@@ -163,7 +163,7 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="text" name="pending_amnt" class="form-control"
+                                                <input type="number" name="pending_amnt" class="form-control no-arrow" min="0" step="1"
                                                     value="{{ old('pending_amnt', $site->pending_amnt ?? '') }}">
                                             </div>
                                             @error('pending_amnt')

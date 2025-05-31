@@ -44,7 +44,8 @@ class OtherUtilitiesController extends Controller
             'site_id' => $request->site_id,
             'amount' => $request->amount,
             'remarks' => $request->remarks,
-            'image' => $imagePath
+            'image' => $imagePath,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Others utility created successfully!');

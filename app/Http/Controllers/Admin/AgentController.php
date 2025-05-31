@@ -31,7 +31,8 @@ class AgentController extends Controller
         $agent = Agent::create([
             'name' => $request->name,
             'company_name' => $request->company_name,
-            'mobile_no' => $request->mobile_no
+            'mobile_no' => $request->mobile_no,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Agent created successfully!');
@@ -55,7 +56,8 @@ class AgentController extends Controller
         $agent->update([
             'name'      => $request->name,
             'company_name' => $request->company_name,
-            'mobile_no' => $request->mobile_no
+            'mobile_no' => $request->mobile_no,
+            'updated_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Agent updated successfully!');

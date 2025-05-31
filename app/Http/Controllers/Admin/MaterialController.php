@@ -94,48 +94,55 @@ class MaterialController extends Controller
     public function getMaterialData(Request $request, $siteId)
     {
         $monthYear = $request->input('monthYear'); // format: YYYY-MM
-        $week = $request->input('week'); // 1 to 4
-        $materialType = $request->input('material_type'); // e.g., 'sand'
+        $week = (int) $request->input('week'); // 1, 2, 3, 4
+        $materialType = $request->input('material_type');
 
         $startOfMonth = Carbon::createFromFormat('Y-m', $monthYear)->startOfMonth();
         $endOfMonth = Carbon::createFromFormat('Y-m', $monthYear)->endOfMonth();
 
-        $query = MaterialOrder::with('vendor')
-            ->where('site_id', $siteId)
-            ->where('material_type', $materialType)
-            ->whereBetween('date', [$startOfMonth, $endOfMonth]);
+        // Default to full month
+        $startDate = $startOfMonth->copy();
+        $endDate = $endOfMonth->copy();
 
-        if ($week > 0 && $week <= 4) {
-            $weekStart = $startOfMonth->copy()->addDays(($week - 1) * 7);
-            $weekEnd = $weekStart->copy()->addDays(6);
-            if ($weekEnd > $endOfMonth) {
-                $weekEnd = $endOfMonth;
+        // If specific week selected (1 to 4)
+        if ($week >= 1 && $week <= 4) {
+            $daysInMonth = $startOfMonth->daysInMonth;
+            $weekLength = ceil($daysInMonth / 4); // usually 7 or 8 days
+
+            $startDate = $startOfMonth->copy()->addDays(($week - 1) * $weekLength);
+            $endDate = $startDate->copy()->addDays($weekLength - 1);
+
+            // Limit to end of month
+            if ($endDate->gt($endOfMonth)) {
+                $endDate = $endOfMonth;
             }
-            $query->whereBetween('date', [$weekStart, $weekEnd]);
         }
 
-        $materials = $query->get();
+        $materials = MaterialOrder::with('vendor')
+            ->where('site_id', $siteId)
+            ->where('material_type', $materialType)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
 
         $totalUnits = $materials->sum('quantity');
         $totalAmount = $materials->sum('price');
 
-        $paymentQuery = MaterialPayment::where('site_id', $siteId)
+        $settledAmount = MaterialPayment::where('site_id', $siteId)
             ->where('material_type', $materialType)
-            ->whereBetween('date', [$startOfMonth, $endOfMonth]);
+            ->whereBetween('date', [$startDate, $endDate])
+            ->sum('settled_amount');
 
-        if ($week > 0 && $week <= 4) {
-            $paymentQuery->whereBetween('date', [$weekStart, $weekEnd]);
-        }
-
-        $settledAmount = $paymentQuery->sum('settled_amount');
-        $pendingAmount = $paymentQuery->sum('pending_amount');
+        $pendingAmount = MaterialPayment::where('site_id', $siteId)
+            ->where('material_type', $materialType)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->sum('pending_amount');
 
         return response()->json([
-            'bricks' => $materials, // rename to materials if used for all types
+            'bricks' => $materials,
             'totalUnits' => $totalUnits,
             'totalAmount' => $totalAmount,
             'settledAmount' => $settledAmount,
-            'pendingAmount' => $pendingAmount
+            'pendingAmount' => $pendingAmount,
         ]);
     }
 
@@ -175,8 +182,11 @@ class MaterialController extends Controller
             'unit'                => $request->unit,
             'delivery_needed_by'  => $request->delivery_needed_by,
             'amount'              => $request->amount,
-            'remarks'             => $request->remarks
+            'remarks'             => $request->remarks,
+            'created_by'  => auth('admin')->id(),
         ]);
+
+        $site = Site::find($request->site_id);
 
         // Save PDF
         // Storage::makeDirectory('public/whatsapp_pdfs');
@@ -192,7 +202,8 @@ class MaterialController extends Controller
 
         // $whatsappUrl = "https://wa.me/{$request->vendor_mobile}?text=" . urlencode("\n$publicLink\n\n");
 
-        $message = "Material Request\n"
+        $message = "* ValliHomes *\n"
+            . "Site Name: {$site->site_name} - Material Request\n"
             . "Vendor Name: {$request->vendor_name}\n"
             . "Mobile Number: {$request->vendor_mobile}\n"
             . "Material Type: {$request->material_type}\n"
@@ -245,6 +256,7 @@ class MaterialController extends Controller
             'quantity' => $request->quantity,
             'unit' => $request->unit,
             'price' => $request->price,
+            'created_by'  => auth('admin')->id(),
             // 'available_unit_count' => $request->available_unit_count
         ]);
 
@@ -264,7 +276,8 @@ class MaterialController extends Controller
                 'vendor_id'         => $request->vendor_id,
                 'total_units' => $request->quantity,
                 'total_unit_price' => $request->price,
-                'balance_amount'  => $request->price
+                'balance_amount'  => $request->price,
+                'created_by'  => auth('admin')->id(),
             ]);
         }
 
@@ -274,6 +287,8 @@ class MaterialController extends Controller
         $site->update([
             'expense' => $oldExpense + $request->price
         ]);
+
+        $site = Site::find($request->site_id);
 
         // Save PDF
         // Storage::makeDirectory('public/whatsapp_pdfs');
@@ -289,7 +304,8 @@ class MaterialController extends Controller
 
         // $whatsappUrl = "https://wa.me/{$request->vendor_mobile}?text=" . urlencode("\n$publicLink\n\n");
 
-        $message = "Material Order\n"
+        $message = "* ValliHomes *\n"
+            . "Site Name: {$site->site_name} - Material Order\n"
             . "Vendor Name: {$request->vendor_name}\n"
             . "Vendor Address: {$request->vendor_address}\n"
             . "Mobile Number: {$request->vendor_mobile}\n"
@@ -335,6 +351,7 @@ class MaterialController extends Controller
             'settled_amount' => $request->settled_amount,
             'pending_amount' => $request->pending_amount,
             'remarks' => $request->remarks,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         // Save PDF

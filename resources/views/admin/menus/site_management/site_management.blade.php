@@ -26,26 +26,29 @@
                         {{ session()->forget('success') }} {{-- Clear session --}}
                     @endif
 
-                    <form id="filterform" action="" method="POST" class="row mb-3">
-                        @csrf
-                        <div class="row mb-3">
-                            {{-- <div class="col-md-4">
-                                <h4 class="card-title">Ongoing Projects</h4>
-                            </div> --}}
-                            {{-- <div class="col-md-4">
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="searchLeads" placeholder="Search...">
-                                </div>
-                            </div> --}}
-                            <div class="col-md-4" style="margin-left: 660px !important;">
-                                <a href="{{ route('site.form') }}" class="btn btn-primary btn-round ms-auto">
+                    <form id="filterform" action="" method="GET" action="{{ route('sitemanagement.list') }}"
+                        class="row mb-3">
+                     
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-4">
+                                <select name="status" id="statusFilter" class="form-select"
+                                    onchange="document.getElementById('filterform').submit();">
+                                    <option value="" {{ request('status') == '' ? 'selected' : '' }}>All</option>
+                                    <option value="New" {{ request('status') == 'New' ? 'selected' : '' }}>New</option>
+                                    <option value="Ongoing" {{ request('status') == 'Ongoing' ? 'selected' : '' }}>Ongoing
+                                    </option>
+                                    <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>
+                                        Completed</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-8 d-flex justify-content-end">
+                                <a href="{{ route('site.form') }}" class="btn btn-primary btn-round">
                                     <i class="fa fa-plus"></i> Add Site
                                 </a>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -66,7 +69,7 @@
                                             </span>
                                         </div>
                                         <div class="col-6 text-end">
-                                              @php
+                                            @php
                                                 $status = $site->status ?? 'New'; // Default status is 'New'
 
                                                 $badgeClass = match ($status) {

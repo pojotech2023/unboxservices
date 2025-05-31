@@ -203,7 +203,8 @@ class VendorController extends Controller
                 'total_units' => $request->total_units,
                 'total_unit_price' => $request->total_unit_price,
                 'balance_amount'  => $newBalanceAmount,
-                'paid_amount'  => $request->paid_amount
+                'paid_amount'  => $request->paid_amount,
+                'updated_by' => auth('api')->id(),
             ]);
         } else {
             VendorPayDetail::create([
@@ -212,7 +213,8 @@ class VendorController extends Controller
                 'total_units'       => $request->total_units,
                 'total_unit_price'   => $request->total_unit_price,
                 'balance_amount'      => $request->opening_balance + $request->total_unit_price,
-                'paid_amount' => $request->paid_amount
+                'paid_amount' => $request->paid_amount,
+                'created_by' => auth('api')->id(),
             ]);
         }
 
@@ -245,7 +247,8 @@ class VendorController extends Controller
             'vendor_id' => $request->vendor_id,
             'payment' => $request->payment,
             'date' => $date,
-            'payment_mode' => $request->payment_mode
+            'payment_mode' => $request->payment_mode,
+            'created_by' => auth('api')->id(),
         ]);
 
         $payDetail = VendorPayDetail::where('vendor_id', $request->vendor_id)->first();

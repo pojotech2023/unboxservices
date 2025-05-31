@@ -102,7 +102,8 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="text" name="value" id="value" class="form-control">
+                                                <input type="number" name="value" id="value"
+                                                    class="form-control no-arrow" min="0" step="1">
                                             </div>
                                             @error('value')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -134,8 +135,8 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="text" name="settled_amnt" id="value"
-                                                    class="form-control">
+                                                <input type="number" name="settled_amnt" id="value"
+                                                    class="form-control no-arrow" min="0" step="1">
                                             </div>
                                             @error('settled_amnt')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -152,7 +153,8 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="text" name="pending_amnt" class="form-control">
+                                                <input type="number" name="pending_amnt" class="form-control no-arrow"
+                                                    min="0" step="1">
                                             </div>
                                             @error('pending_amnt')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -192,7 +194,8 @@
                                         <div class="col-lg-4">
                                             <div class="form-group">
                                                 <input type="text" name="mobile_no" id="mobile_no"
-                                                    class="form-control">
+                                                    class="form-control" maxlength="10" minlength="10" pattern="\d{10}"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                                             </div>
                                             @error('mobile_no')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -304,6 +307,8 @@
                 setTimeout(() => {
                     successAlert.classList.remove("show");
                     successAlert.classList.add("fade");
+                    window.location.href = "/admin/site-management";
+
                 }, 500);
             }
 

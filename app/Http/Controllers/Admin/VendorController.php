@@ -39,7 +39,8 @@ class VendorController extends Controller
             'mobile_no' => $request->mobile_no,
             'email' => $request->email,
             'address' => $request->address,
-            'gst' => $request->gst
+            'gst' => $request->gst,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Vendor created successfully!');
@@ -68,7 +69,8 @@ class VendorController extends Controller
             'mobile_no' => $request->mobile_no,
             'email'  => $request->email,
             'address'  => $request->address,
-            'gst' => $request->gst
+            'gst' => $request->gst,
+            'updated_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Vendor updated successfully!');
@@ -104,7 +106,7 @@ class VendorController extends Controller
         $totalAmount = $orders->sum('price');
 
         $paydetail = VendorPayDetail::where('vendor_id', $vendorId)->first();
-       
+
         return view('admin.menus.vendor.vendor_paydetail', compact('totalUnits', 'totalAmount', 'vendorId', 'paydetail'));
     }
 
@@ -137,7 +139,8 @@ class VendorController extends Controller
                 'total_units' => $request->total_units,
                 'total_unit_price' => $request->total_unit_price,
                 'balance_amount'  => $newBalanceAmount,
-                'paid_amount'  => $request->paid_amount
+                'paid_amount'  => $request->paid_amount,
+                'updated_by'  => auth('admin')->id(),
             ]);
         } else {
             VendorPayDetail::create([
@@ -146,7 +149,8 @@ class VendorController extends Controller
                 'total_units'       => $request->total_units,
                 'total_unit_price'   => $request->total_unit_price,
                 'balance_amount'      => $request->opening_balance + $request->total_unit_price,
-                'paid_amount' => $request->paid_amount
+                'paid_amount' => $request->paid_amount,
+                'created_by'  => auth('admin')->id(),
             ]);
         }
 
@@ -161,50 +165,51 @@ class VendorController extends Controller
             'date' => 'required|date',
             'payment_mode' => 'required'
         ]);
-    
+
         if ($validate->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validate->errors()
             ], 422);
         }
-    
+
         $payment = VendorPayment::create([
             'vendor_id' => $request->vendor_id,
             'payment' => $request->payment,
             'date' => $request->date,
-            'payment_mode' => $request->payment_mode
+            'payment_mode' => $request->payment_mode,
+            'created_by'  => auth('admin')->id(),
         ]);
-    
+
         $payDetail = VendorPayDetail::where('vendor_id', $request->vendor_id)->first();
-    
+
         if ($payDetail) {
             $payDetail->update([
                 'balance_amount' => $payDetail->balance_amount - $request->payment,
                 'paid_amount' => $payDetail->paid_amount + $request->payment,
             ]);
         }
-    
+
         // Get Vendor Info
         $vendor = Vendor::find($request->vendor_id);
-    
+
         $message = "Hi {$vendor->name},\nYour payment of ₹{$request->payment} on {$request->date} via {$request->payment_mode} has been recorded. Thank you!";
         $whatsappUrl = "https://wa.me/{$vendor->mobile_no}?text=" . urlencode($message);
-    
+
         return response()->json([
             'status' => 'success',
             'whatsapp_url' => $whatsappUrl
         ]);
     }
-    
+
 
     public function paymentHistory($vendorId)
     {
         $histories = VendorPayment::with('vendor')
             ->where('vendor_id', $vendorId)
             ->get();
-            
-          $paidAmount = $histories->sum('payment');
+
+        $paidAmount = $histories->sum('payment');
 
         return view('admin.menus.vendor.payment_history', compact('histories', 'vendorId', 'paidAmount'));
     }

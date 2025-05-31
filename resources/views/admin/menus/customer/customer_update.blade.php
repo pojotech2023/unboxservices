@@ -52,7 +52,7 @@
                                     @method('PATCH')
 
                                     <!-- SiteId hidden pass -->
-                                    <input type="hidden" name="site_id" value="{{old('site_id', $customer->site_id)}}">
+                                    <input type="hidden" name="site_id" value="{{ old('site_id', $customer->site_id) }}">
 
                                     <!-- Name & Mobile -->
                                     <div class="row align-items-center mt-5">
@@ -64,7 +64,7 @@
                                         <div class="col-lg-4">
                                             <div class="form-group">
                                                 <input type="text" name="name" class="form-control"
-                                                 value="{{ old('name', $customer->name) }}">
+                                                    value="{{ old('name', $customer->name) }}">
                                             </div>
                                             @error('name')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -80,7 +80,9 @@
                                         <div class="col-lg-4">
                                             <div class="form-group">
                                                 <input type="text" name="mobile_no" id="mobile_no" class="form-control"
-                                                value="{{old('mobile_no', $customer->mobile_no)}}">
+                                                    value="{{ old('mobile_no', $customer->mobile_no) }}" maxlength="10"
+                                                    minlength="10" pattern="\d{10}"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                                             </div>
                                             @error('mobile_no')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -98,7 +100,7 @@
                                         <div class="col-lg-4">
                                             <div class="form-group">
                                                 <input type="text" name="email" class="form-control"
-                                                value="{{old('email', $customer->email)}}">
+                                                    value="{{ old('email', $customer->email) }}">
                                             </div>
                                             @error('email')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -114,7 +116,7 @@
                                         <div class="col-lg-4">
                                             <div class="form-group">
                                                 <input type="date" name="dob" id="dob" class="form-control"
-                                                value="{{old('dob', $customer->dob)}}">
+                                                    value="{{ old('dob', $customer->dob) }}">
                                             </div>
                                             @error('dob')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -132,7 +134,7 @@
                                         <div class="col-lg-4">
                                             <div class="form-group">
                                                 <input type="date" name="marriage_date" class="form-control"
-                                                value="{{old('marriage_date', $customer->marriage_date)}}">
+                                                    value="{{ old('marriage_date', $customer->marriage_date) }}">
                                             </div>
                                             @error('marriage_date')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -147,7 +149,7 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <textarea id="address" name="address" class="form-control" rows="4">{{old('address', $customer->address)}}</textarea>
+                                                <textarea id="address" name="address" class="form-control" rows="4">{{ old('address', $customer->address) }}</textarea>
                                             </div>
                                             @error('address')
                                                 <div class="text-danger">{{ $message }}</div>

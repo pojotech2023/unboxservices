@@ -159,7 +159,7 @@
                                 <label for="name">Amount</label>
                             </div>
                             <div class="col-lg-10">
-                                <input id="amount" name="amount" type="text" class="form-control"
+                                <input id="amount" name="amount" type="number" class="form-control no-arrow" min="0" step="1"
                                     placeholder="Enter amount" />
                                 @error('amount')
                                     <div class="text-danger">{{ $message }}</div>

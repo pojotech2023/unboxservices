@@ -146,7 +146,8 @@
                             </div>
                             <div class="col-lg-8">
                                 <input id="mobile" name="mobile_no" type="text" class="form-control"
-                                    placeholder="Enter mobile number" />
+                                    placeholder="Enter mobile number" maxlength="10" minlength="10" pattern="\d{10}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" />
                                 @error('mobile_no')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror

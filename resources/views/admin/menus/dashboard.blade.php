@@ -13,87 +13,95 @@
                     <h3 class="fw-bold mb-1">Sites Overview</h3>
                     <div class="row">
                         <div class="col-sm-6 col-md-3">
-                            <div class="card card-stats card-primary card-round">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-5">
-                                            <div class="icon-big text-center">
-                                                <i class="bi bi-building"></i>
+                            <a href="{{ url('admin/site-management') }}?status=All" style="text-decoration: none;">
+                                <div class="card card-stats card-primary card-round">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="bi bi-building"></i>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-7 col-stats">
-                                            <div class="numbers">
-                                                <p class="card-category">Total Sites</p>
-                                                <h4 class="card-title">{{ $totalSites }}</h4>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">Total Sites</p>
+                                                    <h4 class="card-title">{{ $totalSites }}</h4>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         <div class="col-sm-6 col-md-3">
-                            <div class="card card-stats card-info card-round">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-5">
-                                            <div class="icon-big text-center">
-                                                <i class="bi bi-building-add"></i>
+                            <a href="{{ url('admin/site-management') }}?status=New" style="text-decoration: none;">
+                                <div class="card card-stats card-info card-round">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="bi bi-building-add"></i>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-7 col-stats">
-                                            <div class="numbers">
-                                                <p class="card-category">New Sites</p>
-                                                <h4 class="card-title">{{ $newSites }}</h4>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">New Sites</p>
+                                                    <h4 class="card-title">{{ $newSites }}</h4>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         <div class="col-sm-6 col-md-3">
-                            <div class="card card-stats card-warning card-round">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-5">
-                                            <div class="icon-big text-center">
-                                                <i class="bi bi-buildings"></i>
+                            <a href="{{ url('admin/site-management') }}?status=Ongoing" style="text-decoration: none;">
+                                <div class="card card-stats card-warning card-round">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="bi bi-buildings"></i>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-7 col-stats">
-                                            <div class="numbers">
-                                                <p class="card-category">Ongoing Sites</p>
-                                                <h4 class="card-title">{{ $ongoingSites }}</h4>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">Ongoing Sites</p>
+                                                    <h4 class="card-title">{{ $ongoingSites }}</h4>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         <div class="col-sm-6 col-md-3">
-                            <div class="card card-stats card-success card-round">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-5">
-                                            <div class="icon-big text-center">
-                                                <i class="bi bi-building-check"></i>
+                            <a href="{{ url('admin/site-management') }}?status=Completed" style="text-decoration: none;">
+                                <div class="card card-stats card-success card-round">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <div class="icon-big text-center">
+                                                    <i class="bi bi-building-check"></i>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-7 col-stats">
-                                            <div class="numbers">
-                                                <p class="card-category">Completed Sites</p>
-                                                <h4 class="card-title">{{ $completedSites }}</h4>
+                                            <div class="col-7 col-stats">
+                                                <div class="numbers">
+                                                    <p class="card-category">Completed Sites</p>
+                                                    <h4 class="card-title">{{ $completedSites }}</h4>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Filter Dropdown status -->
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Filter by Status:</label>
+                    <label class="form-label fw-bold">Filter by Sites:</label>
                     <select id="statusFilter" class="form-select w-auto d-inline-block">
                         <option value="All">All</option>
                         <option value="New" selected>New</option>

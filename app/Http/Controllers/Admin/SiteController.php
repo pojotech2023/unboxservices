@@ -12,14 +12,21 @@ use Illuminate\Support\Facades\Storage;
 
 class SiteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $status = $request->input('status');
+
         $sites = Site::with('customer')
             ->where('is_inactive', 0)
-            ->orderBy('id', 'desc')->get();
-        
-        return view('admin.menus.site_management.site_management', compact('sites'));
+            ->when($status && $status !== 'All', function ($query) use ($status) {
+                return $query->where('status', $status);
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('admin.menus.site_management.site_management', compact('sites', 'status'));
     }
+
 
     public function getForm()
     {
@@ -61,6 +68,7 @@ class SiteController extends Controller
             'duration'  => $request->duration,
             'settled_amnt'  => $request->settled_amnt,
             'pending_amnt'  => $request->pending_amnt,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         $siteID = $site->id;
@@ -72,7 +80,8 @@ class SiteController extends Controller
             'email' => $request->email,
             'dob' => $request->dob,
             'marriage_date' => $request->marriage_date,
-            'address' => $request->address
+            'address' => $request->address,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Site Created and Customer Added successfully.');
@@ -121,10 +130,11 @@ class SiteController extends Controller
             'duration'  => $request->duration,
             'settled_amnt'  => $request->settled_amnt,
             'pending_amnt'  => $request->pending_amnt,
+            'updated_by'  => auth('admin')->id(),
         ]);
 
         //Status update
-        if($request->filled('status')){
+        if ($request->filled('status')) {
             $site->update([
                 'status' => $request->status
             ]);

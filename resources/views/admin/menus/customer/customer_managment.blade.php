@@ -16,6 +16,22 @@
                 </ul>
             </div>
 
+            {{-- reminder --}}
+            @if (!empty($reminders) && count($reminders) > 0)
+                <div class="alert alert-info mb-3">
+                    <strong>Upcoming Reminders (Tomorrow):</strong>
+                    <ul class="mb-0">
+                        @foreach ($reminders as $reminder)
+                            <li>
+                                <strong>{{ $reminder['name'] }}</strong> - {{ $reminder['type'] }} on
+                                {{ \Carbon\Carbon::parse($reminder['date'])->format('d M') }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">

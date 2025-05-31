@@ -6,17 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\RoleMapping;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class SupervisorCreationController extends Controller
 {
-    public function index() 
+    public function index()
     {
-        $supervisors = User::whereHas('roles', function($query) {
+        $supervisors = User::whereHas('roles', function ($query) {
             $query->where('role_name', 'Supervisor');
         })->get();
-        return view('admin.menus.supervisor.user_create', compact('supervisors'));        
+
+        return view('admin.menus.supervisor.user_create', compact('supervisors'));
     }
 
     public function store(Request $request)
@@ -26,6 +28,7 @@ class SupervisorCreationController extends Controller
             'name'          => 'required|string',
             'mobile_no'     => 'required|numeric|digits:10',
             'email'         => 'required|email|unique:users,email',
+            'password'      => 'required|min:6|confirmed'
         ]);
 
         if ($validate->fails()) {
@@ -36,7 +39,8 @@ class SupervisorCreationController extends Controller
             'name' => $request->name,
             'mobile_no' => $request->mobile_no,
             'email' => $request->email,
-            'password' => Hash::make('supervisor@123')
+            'password' => Crypt::encryptString($request->password),
+            'created_by'  => auth('admin')->id(),
         ]);
 
         $supervisorId = $supervisor->id;
@@ -56,6 +60,7 @@ class SupervisorCreationController extends Controller
             'name'          => 'required|string',
             'mobile_no'     => 'required|numeric|digits:10',
             'email' => 'required|email|unique:users,email,' . $request->user_id,
+            'password'      => 'required|min:6|confirmed'
         ]);
 
         if ($validate->fails()) {
@@ -67,7 +72,9 @@ class SupervisorCreationController extends Controller
         $supervisor->update([
             'name'  => $request->name,
             'mobile_no' => $request->mobile_no,
-            'email' => $request->email
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'updated_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Supervisor updated successfully!');

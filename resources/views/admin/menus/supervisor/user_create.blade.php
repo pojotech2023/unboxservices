@@ -78,6 +78,7 @@
                                                                 data-name="{{ $supervisor->name }}"
                                                                 data-mobile="{{ $supervisor->mobile_no }}"
                                                                 data-email="{{ $supervisor->email }}"
+                                                                data-password="{{ $supervisor->password }}"
                                                                 data-bs-toggle="modal" data-bs-target="#addModal">
                                                                 <i class="fa fa-edit"></i>
                                                             </button>
@@ -142,7 +143,8 @@
                             </div>
                             <div class="col-lg-10">
                                 <input id="mobile" name="mobile_no" type="text" class="form-control"
-                                    placeholder="Enter mobile number" />
+                                    placeholder="Enter mobile number" maxlength="10" minlength="10" pattern="\d{10}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"/>
                                 @error('mobile_no')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -162,6 +164,35 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <!-- Password -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <input id="password" name="password" type="password" class="form-control"
+                                    placeholder="Enter password" />
+                                @error('password')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="password_confirmation">Confirm Password</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <input id="password_confirmation" name="password_confirmation" type="password"
+                                    class="form-control" placeholder="Re-enter password" />
+                            </div>
+                             @error('password_confirmation')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                        </div>
+
 
                         <div class="modal-footer border-0">
                             <button type="submit" class="btn btn-primary" id="saveButton">Add</button>
@@ -243,6 +274,8 @@
                     nameInput.value = supervisorName;
                     mobileInput.value = supervisorMobile;
                     emailInput.value = supervisorEmail;
+
+                     mobileInput.readOnly = true;
                 });
             });
 

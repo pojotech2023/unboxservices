@@ -86,8 +86,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="amount" id="amount"
-                                        placeholder="Enter amount">
+                                    <input type="number" class="form-control no-arrow" min="0" step="1"
+                                        name="amount" id="amount" placeholder="Enter amount">
                                 </div>
                                 @error('amount')
                                     <div class="text-danger">{{ $message }}</div>
@@ -132,7 +132,9 @@
                         <div class="row justify-content-center mt-4">
                             <div class="col-lg-4">
                                 <div class="form-group text-center">
-                                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                    <button type="submit" class="btn btn-primary w-100">Share on Whatsapp
+                                        <i class="fab fa-whatsapp me-1"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -164,17 +166,22 @@
                     contentType: false,
                     success: function(response) {
                         // Open WhatsApp tabs with delay
-                        response.whatsapp_urls.forEach(function(url, index) {
-                            setTimeout(() => {
-                                window.open(url, '_blank');
-                            }, index * 500);
-                        });
-
+                        // response.whatsapp_urls.forEach(function(url, index) {
+                        //     setTimeout(() => {
+                        //         window.open(url, '_blank');
+                        //     }, index * 500);
+                        // });
+                        window.open(response.whatsapp_url, '_blank');
                         // Reset form (including file input)
                         form[0].reset();
 
                         // Optionally, focus back on the first field
-                        $('#name').focus();
+                        $('#name').focus();s
+
+                        // Redirect
+                        setTimeout(function() {
+                            window.location.href = "/admin/property-management";
+                        }, 500);
                     },
                     error: function(xhr) {
                         $('#loadingSpinner').addClass('d-none');

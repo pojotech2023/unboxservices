@@ -2,11 +2,18 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
-            <div class="col-lg-10">
-                <h3 class="text-center pb-4 mt-3">Add Wages</h3>
+        <div class="row align-items-center">
+            <div class="col-lg-10 d-flex justify-content-center">
+                <h3 class="pb-4 mt-3 mb-0">Add Wages</h3>
+            </div>
+            <div class="col-lg-2 text-end">
+                <a href="{{ route('attendance', ['siteId' => $siteId]) }}"
+                    class="btn btn-outline-primary rounded-pill mt-3">
+                    ← Back
+                </a>
             </div>
         </div>
+
         <div class="row">
             <div class="col-lg-8">
                 <div class="card shadow-lg p-4 ms-4">
@@ -60,12 +67,13 @@
                             <div class="row align-items-center mt-3">
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" for="amount_{{ $category }}" value="{{ ucfirst($category) }}">
+                                        <input type="text" class="form-control" for="amount_{{ $category }}"
+                                            value="{{ ucfirst($category) }}">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="amount_{{ $category }}"
+                                        <input type="number" class="form-control no-arrow" min="0" step="1" name="amount_{{ $category }}"
                                             placeholder="Enter Amount">
                                     </div>
                                     @error('amount_' . $category)
@@ -115,7 +123,7 @@
                 setTimeout(() => {
                     alert.classList.remove('show');
                     alert.classList.add('fade');
-                     const siteId = "{{ $siteId }}";
+                    const siteId = "{{ $siteId }}";
                     window.location.href = "/admin/attendance/" + siteId;
                 }, 500);
             }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,7 +15,30 @@ class CustomerController extends Controller
         $customers = Customer::with('site')
             ->where('is_inactive', 0)
             ->orderBy('id', 'desc')->get();
-        return view('admin.menus.customer.customer_managment', compact('customers'));
+
+        $tomorrow = now()->addDay()->format('m-d'); // format month-day
+
+        $reminders = [];
+
+        foreach ($customers as $customer) {
+            if ($customer->dob && Carbon::parse($customer->dob)->format('m-d') === $tomorrow) {
+                $reminders[] = [
+                    'name' => $customer->name,
+                    'type' => 'Birthday',
+                    'date' => $customer->dob,
+                ];
+            }
+
+            if ($customer->marriage_date && Carbon::parse($customer->marriage_date)->format('m-d') === $tomorrow) {
+                $reminders[] = [
+                    'name' => $customer->name,
+                    'type' => 'Marriage',
+                    'date' => $customer->marriage_date,
+                ];
+            }
+        }
+
+        return view('admin.menus.customer.customer_managment', compact('customers', 'reminders'));
     }
 
     public function edit($id)
@@ -48,7 +72,8 @@ class CustomerController extends Controller
             'email' => $request->email,
             'dob' => $request->dob,
             'marriage_date' => $request->marriage_date,
-            'address' => $request->address
+            'address' => $request->address,
+            'updated_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'Customer updated successfully!');

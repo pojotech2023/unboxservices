@@ -2,9 +2,15 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
-            <div class="col-lg-10">
-                <h3 class="text-center pb-4 mt-3">Add Attendance</h3>
+         <div class="row align-items-center">
+            <div class="col-lg-10 d-flex justify-content-center">
+                <h3 class="pb-4 mt-3 mb-0">Add Attendance</h3>
+            </div>
+            <div class="col-lg-2 text-end">
+                <a href="{{ route('attendance', ['siteId' => $siteId]) }}"
+                    class="btn btn-outline-primary rounded-pill mt-3">
+                    ← Back
+                </a>
             </div>
         </div>
         <div class="row">
@@ -66,7 +72,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="count_{{ $category }}"
+                                        <input type="number" class="form-control no-arrow" min="0" step="1" name="count_{{ $category }}"
                                             placeholder="Enter Count">
                                     </div>
                                     @error('count_' . $category)

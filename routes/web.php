@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Material\SandController;
 use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\OtherUtilitiesController;
 use App\Http\Controllers\Admin\OtherUtilitiesSubController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\SiteController;
@@ -159,5 +160,9 @@ Route::prefix('admin')->group(function () {
         //Quotation
         Route::get('/quotation-form', [QuotationController::class, 'getForm'])->name('quotation.form');
         Route::post('/quotation-add', [QuotationController::class, 'store'])->name('quotation.add');
+
+        //Profile setting
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+        Route::post('/profile-update', [ProfileController::class, 'update'])->name('profile.update');
     });
 });

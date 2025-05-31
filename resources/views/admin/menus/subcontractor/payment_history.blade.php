@@ -153,13 +153,13 @@
                                 @enderror
                             </div>
                         </div>
-                        <!-- Mobile -->
+                        <!-- Payment -->
                         <div class="row align-items-center mb-3">
                             <div class="col-lg-2">
                                 <label for="payment">Payment</label>
                             </div>
                             <div class="col-lg-10">
-                                <input id="payment" name="payment" type="text" class="form-control" />
+                                <input id="payment" name="payment" type="number" class="form-control no-arrow" min="0" step="1" />
                                 @error('payment')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror

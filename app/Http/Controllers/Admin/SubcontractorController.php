@@ -63,6 +63,7 @@ class SubcontractorController extends Controller
             'date' => $request->date,
             'amount' => $request->amount,
             'remarks' => $request->remarks,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'SubContractor payment added successfully!');
@@ -114,7 +115,7 @@ class SubcontractorController extends Controller
             'payment_mode' => 'required'
         ]);
 
-         if ($validate->fails()) {
+        if ($validate->fails()) {
             return redirect()->back()->withErrors($validate)->withInput();
         }
 
@@ -123,7 +124,8 @@ class SubcontractorController extends Controller
             'name' => $request->name,
             'payment' => $request->payment,
             'date' => $request->date,
-            'payment_mode' => $request->payment_mode
+            'payment_mode' => $request->payment_mode,
+            'created_by'  => auth('admin')->id(),
         ]);
 
         return redirect()->back()->with('success', 'SubContractor payment added successfully!');

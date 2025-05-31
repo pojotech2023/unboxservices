@@ -2,9 +2,15 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
-            <div class="col-lg-10">
-                <h3 class="text-center pb-4 mt-3">Add {{ ucfirst($materialType) }} Request</h3>
+        <div class="row align-items-center">
+            <div class="col-lg-10 d-flex justify-content-center">
+                <h3 class="pb-4 mt-3 mb-0">Add {{ ucfirst($materialType) }} Request</h3>
+            </div>
+            <div class="col-lg-2 text-end">
+                <a href="{{ route('material', ['siteId' => $siteId, 'materialType' => $materialType]) }}"
+                    class="btn btn-outline-primary rounded-pill mt-3">
+                    ← Back
+                </a>
             </div>
         </div>
         <div class="row">
@@ -147,7 +153,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="amount" id="amount"
+                                    <input type="number" class="form-control no-arrow" min="0" step="1" name="amount" id="amount"
                                         placeholder="Enter amount">
                                 </div>
                                 @error('amount')
@@ -181,7 +187,8 @@
                         <div class="row justify-content-center mt-4">
                             <div class="col-lg-4">
                                 <div class="form-group text-center">
-                                    <button type="submit" class="btn btn-primary w-100">Send WhatsApp to Vendor</button>
+                                    <button type="submit" class="btn btn-primary w-100">Send Request to Vendor WhatsApp
+                                         <i class="fab fa-whatsapp me-1"></i>  </button>
                                 </div>
                             </div>
                         </div>

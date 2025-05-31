@@ -47,32 +47,36 @@ class PropertyController extends Controller
       'type' => $request->type,
       'amount' => $request->amount,
       'remarks' => $request->remarks,
-      'image' => $imagePath
+      'image' => $imagePath,
+       'created_by'  => auth('admin')->id(),
     ]);
 
-    $message = "New Property Added\n" .
+    $message = "* ValliHomes *\n" .
+      "New Property Added\n" .
       "Name: {$property->name}\n" .
       "Location: {$property->location}\n" .
       "Type: {$property->type}\n" .
       "Amount: {$property->amount}\n" .
       "Remarks: {$property->remarks}";
 
-    if($property->image)
-    {
+    if ($property->image) {
       $imgUrl = asset('storage/' . $property->image);
       $message .= "\n\n *Image:* {$imgUrl}";
     }
 
-    $agents = Agent::where('is_inactive', 0)->get();
-    $urls = [];
+    // $agents = Agent::where('is_inactive', 0)->get();
+    // $urls = [];
 
-    foreach ($agents as $agent) {
-      $urls[] = "https://wa.me/{$agent->mobile}?text=" . urlencode($message);
-    }
+    // foreach ($agents as $agent) {
+    //   $urls[] = "https://wa.me/{$agent->mobile}?text=" . urlencode($message);
+    // }
+
+    // Just generate ONE URL with message only
+    $url = "https://wa.me/?text=" . urlencode($message);
 
     return response()->json([
       'status' => 'success',
-      'whatsapp_urls' => $urls
+      'whatsapp_url' => $url
     ]);
   }
 }

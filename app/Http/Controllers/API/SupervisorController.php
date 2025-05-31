@@ -32,7 +32,7 @@ class SupervisorController extends Controller
             'name'          => 'required|string',
             'mobile_no'     => 'required|numeric|digits:10',
             'email'         => 'required|email|unique:users,email',
-            'password'      => 'required|min:8|confirmed'
+            'password'      => 'required|min:6|confirmed'
         ]);
 
         if ($validate->fails()) {
@@ -71,7 +71,7 @@ class SupervisorController extends Controller
             'name'          => 'required|string',
             'mobile_no'     => 'required|numeric|digits:10',
             'email'         => 'required|email',
-            'password'      => 'required|min:8|confirmed'
+            'password'      => 'required|min:6|confirmed'
         ]);
 
         if ($validate->fails()) {
