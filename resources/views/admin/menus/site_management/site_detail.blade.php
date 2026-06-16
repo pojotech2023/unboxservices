@@ -6,7 +6,7 @@
                 <h3 class="fw-bold mb-3">Site Details</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
-                        <a href="#">
+                        <a href="{{ route('admin.dashboard') }}">
                             <i class="icon-home"></i>
                         </a>
                     </li>
@@ -14,7 +14,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Site</a>
+                        <a href="{{ route('sitemanagement.list') }}">Site</a>
                     </li>
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
@@ -37,7 +37,7 @@
                     <div class="card h-100 w-100 site-card" data-route="{{ route('attendance', $site->id) }}" onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/attendance.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/attendance.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted mb-3">Today Attendance</div>
                         </div>
@@ -47,7 +47,7 @@
                     <div class="card h-100 w-100 site-card" data-route="{{ route('material.detail', $site->id) }}" onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/material.jpg') }}" class="w-100">
+                                <img src="{{ asset('images/sri/material.jpg') }}" class="w-100">
                             </div>
                             <div class="text-muted mb-3">Materials</div>
                         </div>
@@ -57,9 +57,39 @@
                     <div class="card h-100 w-100 site-card" data-route="{{ route('subcontractor.detail', $site->id) }}" onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1">
-                                <img src="{{ asset('images/valli-homes/subcontractor.jpg') }}" class="w-100">
+                                <img src="{{ asset('images/sri/subcontractor.jpg') }}" class="w-100">
                             </div>
                             <div class="text-muted">SubContractor</div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-6 col-sm-4 col-lg-2">
+                    <div class="card h-100 w-100 site-card" data-route="{{ route('checklist', $site->id) }}" onclick="redirectToDetails(event, this)">
+                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
+                            <div class="h1">
+                                <img src="{{ asset('images/sri/checklist.png') }}" class="w-100">
+                            </div>
+                            <div class="text-muted">checklist</div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-6 col-sm-4 col-lg-2">
+                    <div class="card h-100 w-100 site-card" data-route="{{ route('ticket', $site->id) }}" onclick="redirectToDetails(event, this)">
+                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
+                            <div class="h1">
+                                <img src="{{ asset('images/sri/tickets.png') }}" class="w-100">
+                            </div>
+                            <div class="text-muted">Tickets</div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-6 col-sm-4 col-lg-2">
+                    <div class="card h-100 w-100 site-card" data-route="{{ route('drawing', $site->id) }}" onclick="redirectToDetails(event, this)">
+                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
+                            <div class="h1">
+                                <img src="{{ asset('images/sri/drawing.jpg') }}" class="w-100">
+                            </div>
+                            <div class="text-muted">Drawing</div>
                         </div>
                     </div>
                 </div>

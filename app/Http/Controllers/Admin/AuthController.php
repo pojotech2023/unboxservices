@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Customer;
 
 class AuthController extends Controller
 {
@@ -44,4 +45,9 @@ class AuthController extends Controller
         Auth::guard('admin')->logout();
         return redirect()->route('admin.login');
     }
+
+
+
+
+
 }

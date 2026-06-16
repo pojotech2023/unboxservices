@@ -161,23 +161,6 @@
                             </div>
                         </div>
 
-                        <!-- Available Count -->
-                        {{-- <div class="row align-items-center mt-5">
-                            <div class="col-lg-2">
-                                <div class="form-group">
-                                    <label for="available_unit_count">Available Count</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <input id="available_unit_count" name="available_unit_count" type="text" class="form-control"
-                                        />
-                                </div>
-                                @error('available_unit_count')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div> --}}
 
                         <div class="row justify-content-center mt-4">
                             <div class="col-lg-4">
@@ -267,14 +250,14 @@
 
                             if (response.status === 'success') {
                                 // alert(response.message);
-                                window.open(response.whatsapp_url, '_blank');
+                              //  window.open(response.whatsapp_url, '_blank');
                                 form[0].reset();
 
                                 // Redirect
                                 setTimeout(function() {
                                     const siteId = "{{ $siteId }}";
                                     const materialType = "{{ $materialType }}";
-                                    window.location.href = "/admin/material/" +
+                                    window.location.href = "/admin/public/admin/material/" +
                                         siteId + "/" + materialType;
                                 }, 500);
                             }

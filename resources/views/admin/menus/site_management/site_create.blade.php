@@ -6,7 +6,7 @@
                 <h3 class="fw-bold mb-3">Add Site</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
-                        <a href="#">
+                        <a href="{{ route('admin.dashboard') }}">
                             <i class="icon-home"></i>
                         </a>
                     </li>
@@ -14,7 +14,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Site</a>
+                        <a href="{{ route('sitemanagement.list') }}">Site</a>
                     </li>
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
@@ -29,7 +29,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex align-items-center justify-content-between w-100">
-                                <h4 class="card-title">Site Form</h4>
+                                <h4 class="card-title">Site Details</h4>
                             </div>
                         </div>
                         <div class="card-body">
@@ -63,6 +63,7 @@
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
+                                        
                                         <!-- Site Images -->
                                         <div class="col-lg-2">
                                             <div class="form-group">
@@ -94,26 +95,33 @@
                                             @enderror
                                         </div>
 
-                                        <!-- Valaue -->
                                         <div class="col-lg-2">
                                             <div class="form-group">
-                                                <label for="value">Value</label>
+                                                <label for="flat_area">Flat Area</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="number" name="value" id="value"
-                                                    class="form-control no-arrow" min="0" step="1">
+                                                <input type="text" class="form-control" name="flat_area">
                                             </div>
-                                            @error('value')
+                                            @error('flat_area')
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                    </div>
-
-                                    <!-- Duration & Settled Amount -->
-                                    <div class="row align-items-center">
-                                        <div class="col-lg-2">
+                                           <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label for="flat_area">Built-up Area</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" name="built_up_area">
+                                            </div>
+                                            @error('built_up_area')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                          <div class="col-lg-2">
                                             <div class="form-group">
                                                 <label for="duration">Duration</label>
                                             </div>
@@ -127,8 +135,42 @@
                                             @enderror
                                         </div>
 
+                                        
+                        <div class="col-lg-2"><label>Assigned by Supervisor</label></div>
+                        <div class="col-lg-4">
+                            <select name="supervisor_id" class="form-control">
+                                <option value="">Select Supervisor</option>
+                                @foreach ($supervisors as $supervisor)
+                                    <option value="{{ $supervisor->id }}" {{ old('supervisor_id') == $supervisor->id ? 'selected' : '' }}>
+                                        {{ $supervisor->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('supervisor_id')<div class="text-danger">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+                                        <!-- Valaue -->
+                                        <!--<div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label for="value">Value</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <input type="number" name="value" id="value"
+                                                    class="form-control no-arrow" min="0" step="1">
+                                            </div>
+                                            @error('value')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>-->
+
+                                    <!-- Duration & Settled Amount -->
+                                    <div class="row align-items-center">
+                                       
                                         <!-- Settled Amount -->
-                                        <div class="col-lg-2">
+                                        <!--<div class="col-lg-2">
                                             <div class="form-group">
                                                 <label for="settled_amnt">Settled Amount</label>
                                             </div>
@@ -142,10 +184,10 @@
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                    </div>
+                                    </div>-->
 
                                     <!-- Pending Amount -->
-                                    <div class="row align-items-center">
+                                   <!-- <div class="row align-items-center">
                                         <div class="col-lg-2">
                                             <div class="form-group">
                                                 <label for="pending_amnt">Pending Amount</label>
@@ -160,12 +202,12 @@
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                    </div>
+                                    </div>-->
 
                                     {{-- Customer Form --}}
                                     <div class="card-header">
                                         <div class="d-flex align-items-center justify-content-between w-100">
-                                            <h4 class="card-title">Customer Form</h4>
+                                            <h4 class="card-title">Customer Details</h4>
                                         </div>
                                     </div>
 
@@ -173,12 +215,12 @@
                                     <div class="row align-items-center mt-5">
                                         <div class="col-lg-2">
                                             <div class="form-group">
-                                                <label for="name">Name</label>
+                                                <label for="name">Name <span style="color:red">*</span></label>
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
-                                                <input type="text" name="name" class="form-control">
+                                                <input type="text" name="name" class="form-control" required>
                                             </div>
                                             @error('name')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -188,13 +230,13 @@
                                         <!-- Mobile Number -->
                                         <div class="col-lg-2">
                                             <div class="form-group">
-                                                <label for="mobile_no">Mobile Number</label>
+                                                <label for="mobile_no">Mobile Number <span style="color:red">*</span></label>
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group">
                                                 <input type="text" name="mobile_no" id="mobile_no"
-                                                    class="form-control" maxlength="10" minlength="10" pattern="\d{10}"
+                                                    class="form-control"  maxlength="10" minlength="10" pattern="\d{10}"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                                             </div>
                                             @error('mobile_no')
@@ -237,7 +279,7 @@
                                     </div>
 
                                     <!-- Marriage date & Address -->
-                                    <div class="row align-items-center mt-5">
+                                   <!-- <div class="row align-items-center mt-5">
                                         <div class="col-lg-2">
                                             <div class="form-group">
                                                 <label for="marriage_date">Marriage Date</label>
@@ -250,7 +292,7 @@
                                             @error('marriage_date')
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror
-                                        </div>
+                                        </div>-->
 
                                         <!-- Address -->
                                         <div class="col-lg-2">
@@ -307,7 +349,7 @@
                 setTimeout(() => {
                     successAlert.classList.remove("show");
                     successAlert.classList.add("fade");
-                    window.location.href = "/admin/site-management";
+                    window.location.href = "/admin/public/admin/site-management";
 
                 }, 500);
             }

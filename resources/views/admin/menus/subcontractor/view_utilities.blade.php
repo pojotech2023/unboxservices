@@ -8,7 +8,9 @@
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home"><a href="#"><i class="icon-home"></i></a></li>
                     <li class="separator"><i class="icon-arrow-right"></i></li>
-                    <li class="nav-item"><a href="#">Site Details</a></li>
+                    <li class="nav-item">
+                        <a href="{{ route('sitemanagement.list') }}">Site</a>
+                    </li>
                     <li class="separator"><i class="icon-arrow-right"></i></li>
                     <li class="nav-item"><a href="#">Other Utilities</a></li>
                 </ul>

@@ -2,7 +2,7 @@
     <div class="sidebar-logo">
         <div class="logo-header" data-background-color="dark">
             <a href="index.html" class="logo">
-                <img src="{{ asset('images/logo/logo.jpeg') }}" alt="navbar brand" class="navbar-brand" height="50" />
+                <img src="{{ asset('img/logo.jpg') }}" alt="navbar brand" class="navbar-brand" height="50" style="width: 194px;" />
             </a>
             <div class="nav-toggle">
                 <button class="btn btn-toggle toggle-sidebar">
@@ -22,82 +22,77 @@
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
 
-                {{-- Dashboard (Visible to all roles) --}}
-                <li class="nav-item active">
-                    <a href="{{ route('admin.dashboard') }}" class="collapsed" aria-expanded="false">
+                {{-- Dashboard --}}
+                <li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}">
                         <i class="bi bi-speedometer"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                {{-- <li class="nav-item">
-                    <a href="" class="collapsed" aria-expanded="false">
-                        <i class="fa-solid fa-building"></i>
-                        <p>Sites</p>
-                    </a>
-                </li> --}}
-
-                <li class="nav-item">
-                    <a href="{{ route('sitemanagement.list') }}" class="collapsed" aria-expanded="false">
-                        <i class="far fa-chart-bar"></i>
-                        <p>Site Management</p>
-                    </a>
-                </li>
-
-                 <li class="nav-item">
-                    <a href="{{ route('quotation.form') }}" class="collapsed" aria-expanded="false">
-                       <i class="fa-solid fa-file"></i>
-                       <p>Generate Quotation</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ route('customer.list') }}" class="collapsed" aria-expanded="false">
-                        <i class="bi bi-people-fill"></i>
-                        <p>Customer Management</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#aggregatormenu">
-                        <i class="bi bi-person-fill-add"></i>
-                        <p>Vendor</p>
+                {{-- Mobile Management --}}
+                <li class="nav-item {{ request()->routeIs('brands.*') || request()->routeIs('mobile.*') ? 'active' : '' }}">
+                    <a data-bs-toggle="collapse" href="#mobileMenu" 
+                       class="{{ request()->routeIs('brands.*') || request()->routeIs('mobile.*') ? '' : 'collapsed' }}"
+                       aria-expanded="{{ request()->routeIs('brands.*') || request()->routeIs('mobile.*') ? 'true' : 'false' }}">
+                        <i class="bi bi-phone"></i>
+                        <p>Mobile Management</p>
                         <span class="caret"></span>
                     </a>
-                    <div class="collapse" id="aggregatormenu">
+                    <div class="collapse {{ request()->routeIs('brands.*') || request()->routeIs('mobile.*') ? 'show' : '' }}" id="mobileMenu">
                         <ul class="nav nav-collapse">
-                            <li>
-                                <a href="{{ route('vendor.list') }}" class="collapsed" aria-expanded="false">
-                                    <span class="sub-item">Vendor Management</span>
+                            <li class="{{ request()->routeIs('brands.index') ? 'active' : '' }}">
+                                <a href="{{ route('brands.index') }}">
+                                    <span class="sub-item">Mobile Brands</span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="{{ route('vendor.dashboard') }}">
-                                    <span class="sub-item">Vendor Dashboard</span>
+                            <li class="{{ request()->routeIs('brands.models.variants.questions.index') ? 'active' : '' }}">
+                                <a href="{{ route('brands.models.variants.questions.index') }}">
+                                    <span class="sub-item">Mobile Questions</span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="{{ route('subcontractor.dashboard') }}">
-                                    <span class="sub-item">SubContractor Dashboard</span>
+                             <li class="{{ request()->routeIs('admin.evaluations.mobile.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.evaluations.mobile.index') }}">
+                                    <span class="sub-item">Confirmed Orders</span>
+                                </a>
+                            </li>
+                            
+                    
+                        </ul>
+                    </div>
+                </li>
+
+                {{-- Laptop Management --}}
+                <li class="nav-item {{ request()->routeIs('laptop.*') ? 'active' : '' }}">
+                    <a data-bs-toggle="collapse" href="#laptopMenu"
+                       class="{{ request()->routeIs('laptop.*') ? '' : 'collapsed' }}"
+                       aria-expanded="{{ request()->routeIs('laptop.*') ? 'true' : 'false' }}">
+                        <i class="bi bi-laptop"></i>
+                        <p>Laptop Management</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('laptop.*') ? 'show' : '' }}" id="laptopMenu">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ request()->routeIs('laptop.index') ? 'active' : '' }}">
+                                <a href="{{ route('laptop.brands.index') }}">
+                                    <span class="sub-item">Laptop Brands</span>
+                                </a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.laptop.questions.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.laptop.questions.index') }}">
+                                    <span class="sub-item">Laptop Questions</span>
+                                </a>
+                            </li>
+                             <li class="{{ request()->routeIs('admin.laptop-evaluations.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.laptop-evaluations.index') }}">
+                                    <span class="sub-item">Confirmed Orders </span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                
-                <li class="nav-item">
-                    <a href="{{ route('supervisor.list') }}" class="collapsed" aria-expanded="false">
-                        <i class="bi bi-person-plus-fill"></i>
-                        <p>Supervisor Creation</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('property-list') }}" class="collapsed" aria-expanded="false">
-                        <i class="bi bi-person-plus-fill"></i>
-                        <p>Property List</p>
-                    </a>
-                </li>
 
-                {{-- Logout (Visible to all roles) --}}
+                {{-- Logout --}}
                 <li class="nav-item">
                     <a href="#"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

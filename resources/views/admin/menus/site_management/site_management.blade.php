@@ -6,10 +6,8 @@
                 <h3 class="fw-bold mb-3">Site Management</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
-                        <a href="#"><i class="icon-home"></i></a>
+                        <a href="{{ route('admin.dashboard') }}"><i class="icon-home"></i></a>
                     </li>
-                    <li class="separator"><i class="icon-arrow-right"></i></li>
-                    <li class="nav-item"><a href="#">Site</a></li>
                     <li class="separator"><i class="icon-arrow-right"></i></li>
                     <li class="nav-item"><a href="#">Site Management</a></li>
                 </ul>
@@ -34,7 +32,7 @@
                                 <select name="status" id="statusFilter" class="form-select"
                                     onchange="document.getElementById('filterform').submit();">
                                     <option value="" {{ request('status') == '' ? 'selected' : '' }}>All</option>
-                                    <option value="New" {{ request('status') == 'New' ? 'selected' : '' }}>New</option>
+                                    <option value="coated" {{ request('status') == 'coated' ? 'selected' : '' }}>coated</option>
                                     <option value="Ongoing" {{ request('status') == 'Ongoing' ? 'selected' : '' }}>Ongoing
                                     </option>
                                     <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>
@@ -70,18 +68,27 @@
                                         </div>
                                         <div class="col-6 text-end">
                                             @php
-                                                $status = $site->status ?? 'New'; // Default status is 'New'
+    // Get status from database
+    $status = $site->status ?? 'coated';
 
-                                                $badgeClass = match ($status) {
-                                                    'New' => 'badge-info',
-                                                    'Ongoing' => 'badge-warning',
-                                                    'Completed' => 'badge-success',
-                                                };
-                                            @endphp
+    // If database has 'new', display as 'coated'
+    if ($status === 'New') {
+        $status = 'coated';
+    }
 
-                                            <span class="badge {{ $badgeClass }}">
-                                                {{ $status }}
-                                            </span>
+    // Set badge class based on status
+    $badgeClass = match ($status) {
+        'coated' => 'badge-info',
+        'Ongoing' => 'badge-warning',
+        'Completed' => 'badge-success',
+        default => 'badge-secondary',
+    };
+@endphp
+
+<span class="badge {{ $badgeClass }}">
+    {{ ucfirst($status) }}
+</span>
+
                                             <div class="form-button-action">
                                                 <a href="{{ route('sitemanagement.edit', ['id' => $site->id]) }}"
                                                     class="btn btn-link btn-primary btn-lg">
@@ -110,23 +117,47 @@
                                             <p><strong>Duration</strong>
                                                 <span class="text-muted">{{ $site->duration }}</span>
                                             </p>
-                                            <p><strong>Settled Amount:</strong>
+                                            
+                                             <p><strong>Bulid Up Area:</strong>
+                                                <span class="text-muted">{{ $site->built_up_area }}</span>
+                                            </p>
+                                            <!-- <p><strong>Settled Amount:</strong>
                                                 <span class="text-muted">{{ $site->settled_amnt }}</span>
-                                            </p>
-                                            <p><strong>Expense:</strong>
+                                            </p>-->
+                                           <!-- <p><strong>Settled Amount:</strong>
+                                                <span class="text-muted">{{ $site->settled_amnt }}</span>
+                                            </p>--> 
+                                            <!--<p><strong>Expense:</strong>
                                                 <span class="text-muted">{{ $site->expense ?? 0 }}</span>
-                                            </p>
+                                            </p>-->
                                         </div>
                                         <div class="col-6">
-                                            <p><strong>Location:</strong>
-                                                <span class="text-muted">{{ $site->location }}</span>
-                                            </p>
-                                            <p><strong>Value:</strong>
+                                        <p><strong>Location:</strong>
+                                        @php
+                                            $location = $site->location;
+                                            $isMapLink = Str::startsWith($location, ['http://', 'https://']) && Str::contains($location, 'maps');
+                                        @endphp
+
+                                        @if($isMapLink)
+                                            <a href="{{ $location }}" target="_blank" 
+                                            class="btn btn-sm btn-outline-primary ms-2"
+                                            style="padding: 2px 10px; font-size: 13px; border-radius: 8px;">
+                                                <i class="bi bi-geo-alt-fill"></i> View on Map
+                                            </a>
+                                        @else
+                                            <span class="text-muted">{{ $location }}</span>
+                                        @endif
+                                    </p>
+
+                                    <p><strong>Flat Area:</strong>
+                                    <span class="text-muted">{{ $site->flat_area }}</span>
+                                    </p>
+                                        <!-- <p><strong>Value:</strong>
                                                 <span class="text-muted">{{ $site->value }}</span>
-                                            </p>
-                                            <p><strong>Pending Amount:</strong>
+                                            </p>-->
+                                           <!-- <p><strong>Pending Amount:</strong>
                                                 <span class="text-muted">{{ $site->pending_amnt }}</span>
-                                            </p>
+                                            </p>-->
                                         </div>
                                     </div>
                                 </div>

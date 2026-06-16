@@ -61,4 +61,26 @@ class AuthController extends Controller
             'message' => 'User successfully logged out'
         ]);
     }
+    public function loginWithMobile(Request $request)
+{
+    $request->validate([
+        'mobile_no' => 'required|digits:10'
+    ]);
+
+    $customer = \App\Models\Customer::where('mobile_no', $request->mobile_no)->first();
+
+    if (!$customer) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Customer not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Customer found',
+        'data' => $customer
+    ]);
+}
+
 }

@@ -113,8 +113,19 @@
                                 <div class="form-group">
                                     <select class="form-select form-control" name="unit" id="unit">
                                         <option value="">Select Unit</option>
+                                        
                                         <option value="Load">Load</option>
                                         <option value="Pack">Pack</option>
+                                        <option value="Ltr">Ltr</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="Pieces"> Pieces</option>
+                                        <option value="M Cube">M Cube</option>
+                                        <option value="CFT">CFT</option>
+                                        <option value="unit">unit</option>
+                                        <option value="Bag">Bag</option>
+                                        <option value="Tons">Tons</option>
+                                        <option value="numbers">numbers</option>
+                                        
                                     </select>
                                 </div>
                                 @error('unit')
@@ -145,7 +156,7 @@
                             </div>
                         </div>
 
-                        <div class="row align-items-center mt-4">
+                        <!--<div class="row align-items-center mt-4">
                             <div class="col-lg-2">
                                 <div class="form-group">
                                     <label for="amount" class="fw-bold">Amount</label>
@@ -160,9 +171,44 @@
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div>-->
+                       <div class="row align-items-center mt-4">
+    <div class="col-lg-2">
+        <div class="form-group">
+            <label for="supervisor_name" class="fw-bold">Supervisor Name</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <input type="text" class="form-control" name="supervisor_name" id="supervisor_name"
+                placeholder="Enter supervisor name" 
+                value="{{ old('supervisor_name', $supervisor->name ?? '') }}">
+        </div>
+        @error('supervisor_name')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
 
-                        <div class="row align-items-center">
+<div class="row align-items-center mt-4">
+    <div class="col-lg-2">
+        <div class="form-group">
+            <label for="supervisor_phone" class="fw-bold">Supervisor Phone No</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <input type="text" class="form-control" name="supervisor_phone" id="supervisor_phone"
+                placeholder="Enter phone number"
+                value="{{ old('supervisor_phone', $supervisor->mobile_no ?? '') }}">
+                
+        </div>
+        @error('supervisor_phone')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
+ <div class="row align-items-center">
                             <div class="col-lg-2">
                                 <div class="form-group">
                                     <label for="remarks" class="fw-bold">Remarks</label>
@@ -279,7 +325,7 @@
                                 setTimeout(function() {
                                     const siteId = "{{ $siteId }}";
                                     const materialType = "{{ $materialType }}";
-                                     window.location.href = "/admin/material/" + siteId + "/" +materialType;
+                                     window.location.href = "/admin/public/admin/material/" + siteId + "/" +materialType;
                                 }, 500);
                             }
                         },

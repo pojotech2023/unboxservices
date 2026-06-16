@@ -7,10 +7,10 @@
                 <h3 class="fw-bold mb-3">Customer Management</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
-                        <a href="#"><i class="icon-home"></i></a>
+                        <a href="{{ route('admin.dashboard') }}">
+                            <i class="icon-home"></i>
+                        </a>
                     </li>
-                    <li class="separator"><i class="icon-arrow-right"></i></li>
-                    <li class="nav-item"><a href="#">Customer</a></li>
                     <li class="separator"><i class="icon-arrow-right"></i></li>
                     <li class="nav-item"><a href="#">Customer Management</a></li>
                 </ul>

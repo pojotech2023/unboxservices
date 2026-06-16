@@ -9,10 +9,9 @@
                 </div>
             </div>
             <div class="row">
-                @foreach ($subcontractors as $sub)
-                    <div class="col-md-4">
-                        <a href="{{ route('subcontractor.paymentHistory', ['type' => $sub['type']]) }}"
-                            class="text-decoration-none">
+                @foreach ($subcontractors as $subcontractor)
+                    <div class="col-sm-6 col-md-4">
+                        <a href="{{ route('subcontractor.payDetailForm', ['subcontractorId' => $subcontractor->id]) }}" class="text-decoration-none">
                             <div class="card card-stats card-round">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -23,21 +22,24 @@
                                         </div>
                                         <div class="col col-stats ms-3 ms-sm-0">
                                             <div class="numbers">
-                                                <h4 class="card-title text-capitalize">{{ strtolower($sub['type']) }}</h4>
-                                                <p class="card-category">
-                                                    <strong>Total Amount:</strong> ₹<span
-                                                        class="text-primary">{{ number_format($sub['total_amount'], 2) }}</span>
-                                                </p>
-                                                <p class="card-category">
-                                                    <strong>Paid Amount:</strong> ₹<span
-                                                        class="text-success">{{ number_format($sub['paid_amount'], 2) }}</span>
-                                                </p>
-                                                <p class="card-category">
-                                                    <strong>Pending Amount:</strong> ₹<span
-                                                        class="text-danger">{{ number_format($sub['pending_amount'], 2) }}</span>
-                                                </p>
+                                                <h4 class="card-title">{{ $subcontractor->name }}</h4>
+                                                @php
+                                                $paidAmount = $subcontractor->subcontractor_payment_sum_payment ?? 0;
+                                                $pendingAmount = $subcontractor->subcontractorPayDetail->balance_amount ?? 0;
+                                                $totalAmount = $paidAmount + $pendingAmount;
+                                            @endphp
+                                            
+                                            <p class="card-category">
+                                                <strong>Total Amount:</strong> ₹<strong class="text-primary">{{ number_format($totalAmount, 2) }}</strong>
+                                            </p>
+                                            <p class="card-category">
+                                                <strong>Paid Amount:</strong> ₹<strong class="text-primary">{{ number_format($paidAmount, 2) }}</strong>
+                                            </p>
+                                            <p class="card-category">
+                                                <strong>Pending Amount:</strong> ₹<strong class="text-primary">{{ number_format($pendingAmount, 2) }}</strong>
+                                            </p>
                                             </div>
-                                        </div>
+                                        </div>                                        
                                     </div>
                                 </div>
                             </div>
@@ -46,5 +48,4 @@
                 @endforeach
             </div>
         </div>
-    </div>
-@endsection
+    @endsection

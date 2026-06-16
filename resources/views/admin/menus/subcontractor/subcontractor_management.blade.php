@@ -1,360 +1,377 @@
 @extends('layouts.app')
+
 @section('content')
     <div class="container">
         <div class="page-inner">
-            <div class="page-header d-flex justify-content-between align-items-center mb-3">
-                <div class="d-flex align-items-center">
-                    <h3 class="fw-bold mb-3">SubContractor Details</h3>
-                    <ul class="breadcrumbs mb-3">
-                        <li class="nav-home">
-                            <a href="#">
-                                <i class="icon-home"></i>
-                            </a>
-                        </li>
-                        <li class="separator">
-                            <i class="icon-arrow-right"></i>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#">Site</a>
-                        </li>
-                        <li class="separator">
-                            <i class="icon-arrow-right"></i>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#">SubContractor Details</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <a href="{{ route('site.detail', ['id' => $site->id]) }}" class="btn btn-outline-primary rounded-pill">
-                    ← Back
-                </a>
+            <div class="page-header">
+                <h3 class="fw-bold mb-3">Subcontractor</h3>
+                <ul class="breadcrumbs mb-3">
+                    <li class="nav-home"><a href="{{ route('admin.dashboard') }}"><i class="icon-home"></i></a></li>
+                    <li class="separator"><i class="icon-arrow-right"></i></li>
+                    <li class="nav-item"><a href="#">Subcontractor Management</a></li>
+                </ul>
             </div>
+
             <div class="row">
-                <!-- Blade alert for success -->
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show w-100" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {{ session()->forget('success') }} {{-- Clear session --}}
-                @endif
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <h4 class="card-title mb-0">Subcontractor Management</h4>
+                                {{-- <form method="GET" action="{{ route('vendor-list') }}" class="d-flex align-items-center">
+                                    <div class="input-group" style="width: 280px !important;">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <input type="text" name="search" value="{{ request('search') }}"
+                                            class="form-control" id="searchLeads"
+                                            placeholder="Search Name, Mobile, District...">
+                                    </div>
+                                </form> --}}
+                            </div>
+                            <button class="btn btn-primary btn-round ms-auto" id="addButton" data-bs-toggle="modal"
+                                data-bs-target="#addModal">
+                                <i class="fa fa-plus"></i> Add Subcontractor
+                            </button>
+                        </div>
 
-                <div class="col-6 col-sm-4 col-lg-2">
-                    <div class="card h-100 w-100  site-card"
-                        data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'plumber']) }}"
-                        onclick="redirectToDetails(event, this)">
-                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                            <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/plumber.jpg') }}" class="w-75">
+                        <!-- Blade alert for success -->
+                        @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show w-100" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
                             </div>
-                            <div class="text-muted">Plumber</div>
-                            <div class="text-success fw-bold">Total Amount -
-                                {{ $subcontractors['plumber']['totalAmounts'] ?? 0 }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-sm-4 col-lg-2">
-                    <div class="card h-100 w-100 site-card"
-                        data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'electrician']) }}"
-                        onclick="redirectToDetails(event, this)">
-                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                            <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/electrician.webp') }}" class="w-75">
-                            </div>
-                            <div class="text-muted">Electrician</div>
-                            <div class="text-success fw-bold">Total Amount -
-                                {{ $subcontractors['electrician']['totalAmounts'] ?? 0 }}</div>
-                        </div>
-                    </div>
-                </div>
+                            {{ session()->forget('success') }} {{-- Clear session --}}
+                        @endif
 
-                <div class="col-6 col-sm-4 col-lg-2">
-                    <div class="card h-100 w-100 site-card"
-                        data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'painter']) }}"
-                        onclick="redirectToDetails(event, this)">
-                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                            <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/painting.jpg') }}" class="w-75">
-                            </div>
-                            <div class="text-muted mb-3">Painter</div>
-                            <div class="text-success fw-bold">Total Amount -
-                                {{ $subcontractors['painter']['totalAmounts'] ?? 0 }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-sm-4 col-lg-2">
-                    <div class="card h-100 w-100 site-card"
-                        data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'welder']) }}"
-                        onclick="redirectToDetails(event, this)">
-                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                            <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/welding.jpg') }}" class="w-75">
-                            </div>
-                            <div class="text-muted">Welder</div>
-                            <div class="text-success fw-bold">Total Amount -
-                                {{ $subcontractors['welder']['totalAmounts'] ?? 0 }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-6 col-sm-4 col-lg-2">
-                    <div class="card h-100 w-100 site-card"
-                        data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'tileslayer']) }}"
-                        onclick="redirectToDetails(event, this)">
-                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                            <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/tileslayer.jpg') }}" class="w-75">
-                            </div>
-                            <div class="text-muted mb-3">Tiles Layer</div>
-                            <div class="text-success fw-bold">Total Amount -
-                                {{ $subcontractors['tileslayer']['totalAmounts'] ?? 0 }}</div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-sm-4 col-lg-2">
-                    <div class="card h-100 w-100 site-card"
-                        data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'granitelayer']) }}"
-                        onclick="redirectToDetails(event, this)">
-                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                            <div class="h1">
-                                <img src="{{ asset('images/valli-homes/granitelayer.jpeg') }}" class="w-75">
-                            </div>
-                            <div class="text-muted">Granite Layer</div>
-                            <div class="text-success fw-bold">Total Amount -
-                                {{ $subcontractors['granitelayer']['totalAmounts'] ?? 0 }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-5">
-                    <div class="col-6 col-sm-4 col-lg-2">
-                        <div class="card h-100 w-100 site-card"
-                            data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'sswelder']) }}"
-                            onclick="redirectToDetails(event, this)">
-                            <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                                <div class="h1 m-0">
-                                    <img src="{{ asset('images/valli-homes/welding.jpg') }}" class="w-75">
-                                </div>
-                                <div class="text-muted">SS Welder</div>
-                                <div class="text-success fw-bold">Total Amount -
-                                    {{ $subcontractors['sswelder']['totalAmounts'] ?? 0 }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-4 col-lg-2">
-                        <div class="card h-100 w-100 site-card"
-                            data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'carpenter']) }}"
-                            onclick="redirectToDetails(event, this)">
-                            <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                                <div class="h1 m-0">
-                                    <img src="{{ asset('images/valli-homes/carpenter.jpg') }}" class="w-75">
-                                </div>
-                                <div class="text-muted">Carpenter</div>
-                                <div class="text-success fw-bold">Total Amount -
-                                    {{ $subcontractors['carpenter']['totalAmounts'] ?? 0 }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-4 col-lg-2">
-                        <div class="card h-100 w-100 site-card"
-                            data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'centeringworks']) }}"
-                            onclick="redirectToDetails(event, this)">
-                            <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                                <div class="h1 m-0">
-                                    <img src="{{ asset('images/valli-homes/tiles.jpg') }}" class="w-75">
-                                </div>
-                                <div class="text-muted">Centering Works</div>
-                                <div class="text-success fw-bold">Total Amount -
-                                    {{ $subcontractors['centeringworks']['totalAmounts'] ?? 0 }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-4 col-lg-2">
-                        <div class="card h-100 w-100 site-card"
-                            data-route="{{ route('subcontractor.payList', ['siteId' => $site->id, 'type' => 'masonworks']) }}"
-                            onclick="redirectToDetails(event, this)">
-                            <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
-                                <div class="h1 m-0">
-                                    <img src="{{ asset('images/valli-homes/masonworks.jpg') }}" class="w-75">
-                                </div>
-                                <div class="text-muted">Mason Works</div>
-                                <div class="text-success fw-bold">Total Amount -
-                                    {{ $subcontractors['masonworks']['totalAmounts'] ?? 0 }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row justify-content-center mt-4" id="addButton" data-bs-toggle="modal"
-                    data-bs-target="#addModal" data-site-id="{{ $site->id }}" style="cursor: pointer;">
-                    <div class="col-12 col-md-8 col-lg-6">
-                        <div class="card border border-primary shadow" style="min-height: 140px;">
+                        @if ($subcontractors->isEmpty())
+                            <p class="text-center mt-3">No Subcontractors found. Please add a Subcontractor.</p>
+                        @else
                             <div class="card-body">
-                                <div class="row align-items-center">
-                                    <div class="col-6 text-center">
-                                        <img src="{{ asset('images/valli-homes/othershand.webp') }}"
-                                            style="width: 200px; height: 100px; object-fit: cover;">
-                                    </div>
-                                    <div class="col-6 text-start">
-                                        <h3 class="fw-bold mb-0">OTHERS</h3>
-                                    </div>
+                                <div class="table-responsive">
+                                    <table id="add-row" class="display table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Name</th>
+                                                <th>Subcontractors</th>
+                                                <th>Whatsapp Number</th>
+                                                <th>Email</th>
+                                                <th>Address</th>
+                                                <th>GST</th>
+                                                <th style="width: 10%">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($subcontractors as $index =>$subcontractor)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{$subcontractor->name }}</td>
+                                                    <td>{{$subcontractor->subcontractors }}</td>
+                                                    <td>{{$subcontractor->mobile_no }}</td>
+                                                    <td>{{$subcontractor->email }}</td>
+                                                    <td>{{$subcontractor->address }}</td>
+                                                    <td>{{$subcontractor->gst }}</td>
+                                                    <td>
+                                                        <div class="form-button-action">
+                                                            <!-- Edit Button -->
+                                                            <button type="button"
+                                                                class="btn btn-link btn-primary btn-lg editButton"
+                                                                data-id="{{$subcontractor->id }}"
+                                                                data-name="{{$subcontractor->name }}"
+                                                                data-subcontractors="{{$subcontractor->subcontractors }}"
+                                                                data-mobile="{{$subcontractor->mobile_no }}"
+                                                                data-email="{{$subcontractor->email }}"
+                                                                data-address="{{$subcontractor->address }}"
+                                                                data-gst="{{$subcontractor->gst }}"
+                                                                data-bs-toggle="modal" data-bs-target="#addModal">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                            <!-- Delete Button -->
+                                                            <button type="button"
+                                                                class="btn btn-link btn-danger deleteButton"
+                                                                data-id="{{$subcontractor->id }}" data-bs-toggle="modal"
+                                                                data-bs-target="#deleteModal">
+                                                                <i class="fa fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Add/Edit Modal -->
-        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title">
-                            <span class="fw-mediumbold" id="modalTitle">Others</span>
-                        </h5>
-                        <div class="d-flex gap-2 align-items-center">
-                            <a href="{{ route('site.subutilities', $site->id) }}" class="btn btn-info btn-sm">View
-                                Details</a>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+    <!-- Add/Edit Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">
+                        <span class="fw-mediumbold" id="modalTitle">Add Subcontractor</span>
+                    </h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="subcontractorForm" action="{{ route('subcontractor.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" id="subcontractor_id" name="subcontractor_id">
+
+                        <!-- Name -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="name">Name</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <input id="name" name="name" type="text" class="form-control"
+                                    placeholder="Enter name" />
+                                @error('name')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="modal-body">
-                        <form id="utilityForm" action="{{ route('subutilities.add') }}" method="POST"
-                            enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" id="site_id" name="site_id">
-
-                            <div class="row align-items-center">
-                                <div class="col-lg-2">
-                                    <label for="amount">Amount</label>
+                        <!-- Site Utilities -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="subcontractors">Subcontractors</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <div class="form-group">
+                                    <select class="form-select form-control" name="subcontractors" id="subcontractors">
+                                        <option value="">Select Subcontractor</option>
+                                        <option value="Plumbers">Plumber</option>
+                                        <option value="Electrician">Electrician</option>
+                                        <option value="Painter">Painter</option>
+                                        <option value="Welder">Welder</option>
+                                        <option value="Tiles Layer">Tiles Layer</option>
+                                        <option value="Granite Layer">Granite Layer</option>
+                                        <option value="SS Welder">SS Welder</option>
+                                        <option value="Carpenter">Carpenter</option>
+                                        <option value="Centering Works">Centering Works</option>
+                                        <option value="Mason Works">Mason Works</option>
+                                    </select>
                                 </div>
-                                <div class="col-lg-10">
-                                    <input id="amount" name="amount" type="number" class="form-control no-arrow" min="0" step="1"
-                                        placeholder="Enter Amount" />
-                                </div>
-                                @error('amount')
+                                @error('subcontractors')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div class="row align-items-center mt-3">
-                                <div class="col-lg-2">
-                                    <label for="image">Image</label>
-                                </div>
-                                <div class="col-lg-10">
-                                    <input id="image" name="image" type="file" class="form-control"
-                                        accept=".jpg,.jpeg,.png,.webp" />
-                                </div>
-                                @error('image')
+                        <!-- Mobile -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="mobile_no">Whatsapp Number</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <input id="mobile" name="mobile_no" type="text" class="form-control"
+                                    placeholder="Enter mobile number" maxlength="10" minlength="10" pattern="\d{10}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"/>
+                                @error('mobile_no')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div class="row align-items-center mt-3">
-                                <div class="col-lg-2">
-                                    <label for="remarks">Remarks</label>
-                                </div>
-                                <div class="col-lg-10">
-                                    <textarea id="remarks" name="remarks" class="form-control" rows="4"></textarea>
-                                </div>
-                                @error('remarks')
+                        <!-- Email -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="email">Email Id</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <input id="email" name="email" type="email" class="form-control"
+                                    placeholder="Enter email" />
+                                @error('email')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div class="modal-footer border-0">
-                                <button type="submit" class="btn btn-primary" id="saveButton">Add</button>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <!-- Location -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="address">Address</label>
                             </div>
-                        </form>
-                    </div>
+                            <div class="col-lg-10">
+                                <textarea id="address" name="address" class="form-control" rows="2" placeholder="Enter Address"></textarea>
+                                @error('address')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+
+                            </div>
+                        </div>
+
+                        <!-- Gst -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-lg-2">
+                                <label for="gst">GST</label>
+                            </div>
+                            <div class="col-lg-10">
+                                <input id="gst" name="gst" type="text" class="form-control"
+                                    placeholder="Enter gst" />
+                                @error('gst')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="modal-footer border-0">
+                            <button type="submit" class="btn btn-primary" id="saveButton">Add</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Spinner -->
-        <div class="d-flex justify-content-center mt-3">
-            <div class="spinner-border text-primary d-none" role="status" id="loadingSpinner">
-                <span class="visually-hidden">Loading...</span>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this record?
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteForm" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            //redirect to leads detail page
-            function redirectToDetails(event, card) {
-                event.stopPropagation(); // Prevents unintended clicks
-                // Remove styles from all cards
-                document.querySelectorAll('.site-card').forEach(item => {
-                    item.classList.remove('selected-card');
+    <!-- Spinner -->
+    <div class="d-flex justify-content-center mt-3">
+        <div class="spinner-border text-primary d-none" role="status" id="loadingSpinner">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modalTitle = document.getElementById("modalTitle");
+            const subcontractorForm = document.getElementById("subcontractorForm");
+            const subcontractorIdInput = document.getElementById("subcontractor_id");
+            const nameInput = document.getElementById("name");
+            const siteInput = document.getElementById("subcontractors");
+            const mobileInput = document.getElementById("mobile");
+            const emailInput = document.getElementById("email");
+            const addressInput = document.getElementById("address");
+            const gstInput = document.getElementById('gst');
+            const saveButton = document.getElementById("saveButton");
+            const spinner = document.getElementById("loadingSpinner");
+
+            // Add vendor Button Click
+            document.getElementById("addButton").addEventListener("click", function() {
+                modalTitle.innerText = "Add Vendor";
+                saveButton.innerText = "Add";
+                subcontractorForm.action = "{{ route('subcontractor.add') }}";
+                subcontractorIdInput.value = "";
+                nameInput.value = "";
+                siteInput.value = "";
+                mobileInput.value = "";
+                emailInput.value = "";
+                addressInput.value = "";
+                gstInput.value = "";
+            });
+
+            // Edit vendor Button Click
+            document.querySelectorAll(".editButton").forEach(button => {
+                button.addEventListener("click", function() {
+                    const subcontractorId = this.getAttribute("data-id");
+                    const vendorName = this.getAttribute("data-name");
+                    const vendorSite = this.getAttribute("data-subcontractors");
+                    const vendorMobile = this.getAttribute("data-mobile");
+                    const vendorEmail = this.getAttribute("data-email");
+                    const vendorAddress = this.getAttribute("data-address");
+                    const vendorGst = this.getAttribute("data-gst");
+
+                    modalTitle.innerText = "Edit Vendor";
+                    saveButton.innerText = "Update";
+                    subcontractorForm.action = "{{ route('subcontractor.update') }}";
+                    subcontractorIdInput.value = subcontractorId;
+                    nameInput.value = vendorName;
+                    siteInput.value = vendorSite;
+                    mobileInput.value = vendorMobile;
+                    emailInput.value = vendorEmail;
+                    addressInput.value = vendorAddress;
+                    gstInput.value = vendorGst;
                 });
-                // Add active class to clicked card
-                card.classList.add('selected-card');
-                // Redirect after small delay
-                let route = card.getAttribute('data-route');
-                if (route) {
-                    window.location.href = route;
-                }
+            });
+
+            // Delete Button Click
+            document.querySelectorAll(".deleteButton").forEach(button => {
+                button.addEventListener("click", function() {
+                    const subcontractorId = this.getAttribute("data-id");
+                    const action = "{{ route('subcontractor.delete', ':id') }}".replace(':id',
+                        subcontractorId);
+                    document.getElementById("deleteForm").setAttribute("action", action);
+                });
+            });
+
+            //Show Spinner and Disable Form on Submit
+            subcontractorForm.addEventListener("submit", function() {
+                spinner.classList.remove("d-none"); // Show spinner
+                saveButton.disabled = true; // Disable button to prevent multiple clicks
+            });
+
+            //Auto-hide success alert after 3 seconds
+            const successAlert = document.querySelector(".alert-success");
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.classList.remove("show");
+                    successAlert.classList.add("fade");
+                }, 500);
             }
-            document.addEventListener("DOMContentLoaded", function() {
-                const addButton = document.getElementById('addButton');
-                const siteIdInput = document.getElementById('site_id');
-                const utilityForm = document.getElementById('utilityForm');
-                const spinner = document.getElementById('loadingSpinner');
-                const saveButton = document.getElementById('saveButton');
-                const closeButton = document.querySelector('#addModal .btn-danger');
 
-                // Set site_id when modal is opened
-                if (addButton && siteIdInput) {
-                    addButton.addEventListener('click', function() {
-                        const siteId = this.getAttribute('data-site-id');
-                        siteIdInput.value = siteId;
-                    });
-                }
+            //Clear validation error when modal is closed
+            addModal.addEventListener('hidden.bs.modal', function() {
+                // Clear form fields
+                nameInput.value = "";
+                siteInput.value = "";
+                mobileInput.value = "";
+                emailInput.value = "";
+                addressInput.value = "";
+                gstInput.value = "";
 
-                // Show spinner + disable buttons on form submit
-                if (utilityForm) {
-                    utilityForm.addEventListener('submit', function(e) {
-                        // Disable buttons
-                        saveButton.disabled = true;
-                        closeButton.disabled = true;
+                // Remove error messages manually
+                const errorMessages = addModal.querySelectorAll('.text-danger');
+                errorMessages.forEach(el => el.remove());
 
-                        // Show spinner
-                        if (spinner) {
-                            spinner.classList.remove('d-none');
-                        }
-                    });
-                }
-
-                // Auto-hide success alert after 3 seconds
-                const successAlert = document.querySelector(".alert-success");
-                if (successAlert) {
-                    setTimeout(() => {
-                        successAlert.classList.add("fade");
-                        successAlert.classList.remove("show");
-                    }, 500);
-                }
+                // Remove is-invalid class
+                const errorInputs = addModal.querySelectorAll('.is-invalid');
+                errorInputs.forEach(input => input.classList.remove('is-invalid'));
+            });
+        });
+    </script>
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var myModal = new bootstrap.Modal(document.getElementById('addModal'));
+                myModal.show();
             });
         </script>
-        <style>
-            .site-card {
-                cursor: pointer;
-                transition: all 0.3s ease-in-out;
-                border: 2px solid #dee2e6;
-                background: #fff;
-                border-radius: 8px;
-            }
-
-            /* Hover Effect */
-            .site-card:hover {
-                transform: scale(1.02);
-                border-color: #007bff;
-                box-shadow: 0px 5px 15px rgba(0, 123, 255, 0.3);
-            }
-        </style>
-    @endsection
+    @endif
+@endsection

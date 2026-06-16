@@ -7,15 +7,15 @@
                     <h3 class="fw-bold mb-3 me-3">Material Details</h3>
                     <ul class="breadcrumbs mb-0">
                         <li class="nav-home">
-                            <a href="#">
-                                <i class="icon-home"></i>
-                            </a>
+                        <a href="{{ route('admin.dashboard') }}">
+                            <i class="icon-home"></i>
+                        </a>
                         </li>
                         <li class="separator">
                             <i class="icon-arrow-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="#">Site</a>
+                            <a href="{{ route('sitemanagement.list') }}">Site</a>
                         </li>
                         <li class="separator">
                             <i class="icon-arrow-right"></i>
@@ -47,7 +47,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/bricks.webp') }}" class="w-75">
+                                <img src="{{ asset('images/sri/bricks.webp') }}" class="w-75">
                             </div>
                             <div class="text-muted mb-3">Bricks</div>
                             <div class="text-success fw-bold">
@@ -65,7 +65,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1">
-                                <img src="{{ asset('images/valli-homes/sand.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/sand.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Sand</div>
                             <div class="text-success fw-bold">
@@ -83,7 +83,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/cement1.webp') }}" class="w-75">
+                                <img src="{{ asset('images/sri/cement1.webp') }}" class="w-75">
                             </div>
                             <div class="text-muted">Cement</div>
                             <div class="text-success fw-bold">
@@ -101,7 +101,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/electricwire.webp') }}" class="w-75">
+                                <img src="{{ asset('images/sri/electricwire.webp') }}" class="w-75">
                             </div>
                             <div class="text-muted">Electrical Wires</div>
                             <div class="text-success fw-bold">
@@ -119,7 +119,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/plumber.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/plumber.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Plumber</div>
                             <div class="text-success fw-bold">
@@ -137,7 +137,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/tea.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/tea.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Tea</div>
                             <div class="text-success fw-bold">
@@ -158,7 +158,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/watercan.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/watercan.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Watercan</div>
                             <div class="text-success fw-bold">
@@ -176,7 +176,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/waterlorry.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/waterlorry.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Lorry Water</div>
                             <div class="text-success fw-bold">
@@ -194,7 +194,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/tiles.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/tiles.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Tiles</div>
                             <div class="text-success fw-bold">
@@ -212,7 +212,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/granite.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/granite.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Granite</div>
                             <div class="text-success fw-bold">
@@ -230,7 +230,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/jally.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/jally.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Jally</div>
                             <div class="text-success fw-bold">
@@ -248,7 +248,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/welding.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/welding.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Welding</div>
                             <div class="text-success fw-bold">
@@ -269,7 +269,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/lift.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/lift.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Lift</div>
                             <div class="text-success fw-bold">
@@ -287,7 +287,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/concrete.webp') }}" class="w-75">
+                                <img src="{{ asset('images/sri/concrete.webp') }}" class="w-75">
                             </div>
                             <div class="text-muted">RC Concrete</div>
                             <div class="text-success fw-bold">
@@ -305,7 +305,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/transport.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/transport.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Transport</div>
                             <div class="text-success fw-bold">
@@ -323,7 +323,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/interior.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/interior.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Interior</div>
                             <div class="text-success fw-bold">
@@ -341,7 +341,7 @@
                         onclick="redirectToDetails(event, this)">
                         <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
                             <div class="h1 m-0">
-                                <img src="{{ asset('images/valli-homes/painting.jpg') }}" class="w-75">
+                                <img src="{{ asset('images/sri/painting.jpg') }}" class="w-75">
                             </div>
                             <div class="text-muted">Painting</div>
 
@@ -363,7 +363,7 @@
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-6 text-center">
-                                    <img src="{{ asset('images/valli-homes/othershand.webp') }}"
+                                    <img src="{{ asset('images/sri/othershand.webp') }}"
                                         style="width: 200px; height: 100px; object-fit: cover;">
                                 </div>
                                 <div class="col-6 text-start">

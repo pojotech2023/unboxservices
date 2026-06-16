@@ -110,6 +110,18 @@
                                         <option value="">Select Unit</option>
                                         <option value="Load">Load</option>
                                         <option value="Pack">Pack</option>
+                                        <option value="Ltr">Ltr</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="Pieces"> Pieces</option>
+                                        <option value="mqueeb">mqueeb</option>
+                                        <option value="CFT">CFT</option>
+                                        <option value="unit">unit</option>
+                                        <option value="Bag">Bag</option>
+                                        <option value="Tons">Tons</option>
+                                        <option value="numbers">numbers</option>
+                                        
+
+
                                     </select>
                                 </div>
                                 @error('unit')
@@ -156,6 +168,8 @@
                                 @enderror
                             </div>
                         </div>
+                        
+                      
 
                         <div class="row align-items-center">
                             <div class="col-lg-2">

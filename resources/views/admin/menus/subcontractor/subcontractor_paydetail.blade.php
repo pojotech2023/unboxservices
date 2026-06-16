@@ -2,110 +2,125 @@
 
 @section('content')
     <div class="container">
-        <div class="page-inner">
-            <div class="page-header d-flex justify-content-between align-items-center mb-3">
-                <div class="d-flex align-items-center">
-                    <h3 class="fw-bold mb-3">{{ ucfirst($type) }} Payment</h3>
-                    <ul class="breadcrumbs mb-0">
-                        <li class="nav-home">
-                            <a href="#">
-                                <i class="icon-home"></i>
-                            </a>
-                        </li>
-                        <li class="separator">
-                            <i class="icon-arrow-right"></i>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#">SubContractor Details</a>
-                        </li>
-                        <li class="separator">
-                            <i class="icon-arrow-right"></i>
-                        </li>
-                        <li class="nav-item">
-                         <a href="#">{{ ucfirst($type) }} Payment</a>
-                        </li>
-                    </ul>
+        <div class="px-3"> {{-- Added padding on both left and right --}}
+            <div class="row align-items-center mb-4 mt-3">
+                <div class="col-lg-6">
+                    <h3 class="pb-2">SubContractor Payment Detail</h3>
                 </div>
-                <a href="{{ route('subcontractor.detail', ['siteId' => $siteId]) }}" class="btn btn-outline-primary rounded-pill">
-                    ← Back
-                </a>
+                <div class="col-lg-6 text-end">
+                    <button class="btn btn-success me-2 mb-2" id="addButton" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <i class="fa fa-plus"></i> Add Payment
+                    </button>
+                    <a href="{{ route('subpayment.history', ['subcontractorId' => $subcontractorId]) }}" class="btn btn-primary mb-2">
+                        <i class="fa fa-history"></i> Payment History
+                    </a>
+                </div>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-3">
-                                <h4 class="card-title mb-0">{{ ucfirst($type) }} Payment Management</h4>
-                            </div>
-                            <button class="btn btn-success btn-round ms-auto" id="addButton" data-bs-toggle="modal"
-                                data-bs-target="#addModal">
-                                <i class="fa fa-plus"></i> Payment
-                            </button>
+        <div class="row">
+            <div class="col-lg-11">
+                <div class="card shadow-lg p-4 ms-4">
+
+                    <!-- Blade alert for success -->
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show w-100" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
+                        {{ session()->forget('success') }} {{-- Clear session --}}
+                    @endif
 
-                        <!-- Blade alert for success -->
-                        @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show w-100" role="alert">
-                                {{ session('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                            {{ session()->forget('success') }} {{-- Clear session --}}
-                        @endif
+                    <form id="subcontractorPayDetailForm" action="{{ route('subpaydetail.update') }}" method="POST"
+                        class="container">
 
-                        @if ($subcontractors->isEmpty())
-                            <p class="text-center mt-3"> No {{ ucfirst($type) }} Pay list found this Site.</p>
-                        @else
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table id="add-row" class="display table table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>S.No</th>
-                                                <th>Name</th>
-                                                <th>Date</th>
-                                                <th>Amount</th>
-                                                <th>Remarks</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="bricksTableBody">
-                                            @foreach ($subcontractors as $index => $subcontractor)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $subcontractor->name }}</td>
-                                                    <td>{{ $subcontractor->date }}</td>
-                                                    <td>{{ $subcontractor->amount }}</td>
-                                                    <td>{{ $subcontractor->remarks }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                        @csrf
+
+                        <input type="hidden" name="subcontractor_id" id="subcontractor_id" value="{{ $subcontractorId }}">
+
+                        <div class="row align-items-center">
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <label for="opening_balance" class="fw-bold">Opening Balance</label>
                                 </div>
                             </div>
-                        @endif
-                    </div>
-                    <div class="card">
-                        <div class="card-body d-flex justify-content-center">
-                            <table class="table mt-3" style="width: 50%">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <h5 class="fw-bold text-info">TOTAL AMOUNT</h5>
-                                        </td>
-                                        <td>
-                                            <h5 class="fw-bold text-info" id="totalUnits">{{ $totalAmount }}</h5>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="col-lg-4 position-relative">
+                                <div class="form-group">
+                                    <input type="text" id="opening_balance" name="opening_balance" class="form-control"
+                                        value="{{ $paydetail->opening_balance ?? '' }}"  oninput="this.value = this.value.replace(/[^0-9.]/g, '');">                                                                                                             
+                                </div>
+                                @error('opening_balance')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
+
+
+                        <div class="row align-items-center mt-5">
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <label for="total_amount" class="fw-bold">Total Amount</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="total_amount"
+                                        value="{{ $totalAmount }}" readonly>
+                                </div>
+                                @error('total_amount')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="row align-items-center mt-4">
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <label for="balance_amount" class="fw-bold">Balance Amount</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="balance_amount" id="balance_amount"
+                                        value="{{ $paydetail->balance_amount ?? 0 }}" readonly>
+                                </div>
+                                @error('balance_amount')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mt-4">
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <label for="paid_amount" class="fw-bold">Paid Amount</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="paid_amount" id="paid_amount"
+                                        value="{{ $paydetail->paid_amount ?? 0 }}" readonly>
+                                </div>
+                                @error('paid_amount')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="row justify-content-center mt-4">
+                            <div class="col-lg-4">
+                                <div class="form-group text-center">
+                                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- Add/Edit Modal -->
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -120,27 +135,11 @@
                 </div>
 
                 <div class="modal-body">
-                    <form id="plumberPayForm" action="{{ route('subcontractor.payAdd') }}" method="POST">
+                    <form id="paymentForm" action="{{ route('subpayment.add') }}" method="POST">
                         @csrf
-                        <input type="hidden" id="site_id" name="site_id" value="{{ $siteId }}">
-
-                        <input type="hidden" name="subcontractor_type" value="{{ ucfirst($type) }}">
+                        <input type="hidden" id="subcontractor_id" name="subcontractor_id" value="{{ $subcontractorId }}">
 
                         <!-- Name -->
-                        <div class="row align-items-center mb-3">
-                            <div class="col-lg-2">
-                                <label for="name">Name</label>
-                            </div>
-                            <div class="col-lg-10">
-                                <input id="name" name="name" type="text" class="form-control"
-                                    placeholder="Enter name" />
-                                @error('name')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Date -->
                         <div class="row align-items-center mb-3">
                             <div class="col-lg-2">
                                 <label for="date">Date</label>
@@ -152,32 +151,37 @@
                                 @enderror
                             </div>
                         </div>
-
-                        <!-- Amount -->
+                        <!-- Mobile -->
                         <div class="row align-items-center mb-3">
                             <div class="col-lg-2">
-                                <label for="name">Amount</label>
+                                <label for="payment">Payment</label>
                             </div>
                             <div class="col-lg-10">
-                                <input id="amount" name="amount" type="number" class="form-control no-arrow" min="0" step="1"
-                                    placeholder="Enter amount" />
-                                @error('amount')
+                                <input id="payment" name="payment" type="text" class="form-control" 
+                                oninput="this.value = this.value.replace(/[^0-9.]/g, '');"/>
+                                @error('payment')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
-
-                        <!-- remarks -->
+                        <!-- Site Utilities -->
                         <div class="row align-items-center mb-3">
                             <div class="col-lg-2">
-                                <label for="remarks">Remarks</label>
+                                <label for="payment_mode">Payment Mode</label>
                             </div>
                             <div class="col-lg-10">
-                                <textarea id="remarks" name="remarks" class="form-control" rows="2" placeholder="Enter remarks"></textarea>
-                                @error('remarks')
+                                <div class="form-group">
+                                    <select class="form-select form-control" name="payment_mode" id="payment_mode">
+                                        <option value="">Select Payment Mode</option>
+                                        <option value="Online">Online</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="Net Banking">Net Banking</option>
+                                        <option value="Cash">Cash</option>
+                                    </select>
+                                </div>
+                                @error('payment_mode')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
-
                             </div>
                         </div>
 
@@ -191,7 +195,6 @@
         </div>
     </div>
 
-
     <!-- Spinner -->
     <div class="d-flex justify-content-center mt-3">
         <div class="spinner-border text-primary d-none" role="status" id="loadingSpinner">
@@ -199,77 +202,59 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const modalTitle = document.getElementById("modalTitle");
-            const plumberPayForm = document.getElementById("plumberPayForm");
-            const nameInput = document.getElementById("name");
-            const dateInput = document.getElementById("date");
-            const amountInput = document.getElementById("amount");
-            const remarksInput = document.getElementById("remarks");
-            const saveButton = document.getElementById("saveButton");
-            const spinner = document.getElementById("loadingSpinner");
-
-            // Add vendor Button Click
-            document.getElementById("addButton").addEventListener("click", function() {
-                modalTitle.innerText = "Add Payment";
-                saveButton.innerText = "Add";
-                plumberPayForm.action = "{{ route('subcontractor.payAdd') }}";
-                nameInput.value = "";
-                dateInput.value = "";
-                amountInput.value = "";
-                remarksInput.value = "";
-            });
-
-            if (plumberPayForm) {
-                plumberPayForm.addEventListener("submit", function() {
-                    spinner.classList.remove("d-none");
-                    saveButton.disabled = true;
-                });
-            }
-
-            //Auto-hide success alert after 3 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide success alert
             const successAlert = document.querySelector(".alert-success");
             if (successAlert) {
                 setTimeout(() => {
-                    successAlert.classList.add("fade");
                     successAlert.classList.remove("show");
-                }, 500);
+                    successAlert.classList.add("fade");
+                }, 300);
             }
-            //Clear validation error when modal is closed
-            addModal.addEventListener('hidden.bs.modal', function() {
-                // Clear form fields
-                nameInput.value = "";
-                dateInput.value = "";
-                amountInput.value = "";
-                remarksInput.value = "";
+        });
 
-                // Remove error messages manually
-                const errorMessages = addModal.querySelectorAll('.text-danger');
-                errorMessages.forEach(el => el.remove());
+        $(document).ready(function() {
+            $('#paymentForm').on('submit', function(e) {
+                e.preventDefault();
+                $('#loadingSpinner').removeClass('d-none');
 
-                // Remove is-invalid class
-                const errorInputs = addModal.querySelectorAll('.is-invalid');
-                errorInputs.forEach(input => input.classList.remove('is-invalid'));
+                let form = $(this);
+                let formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        $('#loadingSpinner').addClass('d-none');
+                        if (response.status === 'success') {
+                             // Close the Bootstrap 5 modal using native JS
+                            const modalEl = document.getElementById('addModal');
+                            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                            modalInstance.hide();
+                            // Open WhatsApp tabs with delay
+                            //window.open(response.whatsapp_url, '_blank');
+                            form[0].reset();
+                            // Optionally reload the page (if needed)
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#loadingSpinner').addClass('d-none');
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            let message = Object.values(errors).map(e => e[0]).join("\n");
+                            alert("Validation Errors:\n" + message);
+                        } else {
+                            alert("Something went wrong!");
+                        }
+                    }
+                });
             });
         });
     </script>
-    @if ($errors->any())
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var myModal = new bootstrap.Modal(document.getElementById('addModal'));
-                myModal.show();
-            });
-        </script>
-    @endif
-    <style>
-        .week-btn {
-            cursor: pointer;
-        }
-
-        .week-btn.active {
-            background-color: #007bff;
-            color: white;
-        }
-    </style>
 @endsection

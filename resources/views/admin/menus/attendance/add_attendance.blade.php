@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-         <div class="row align-items-center">
+        <div class="row align-items-center">
             <div class="col-lg-10 d-flex justify-content-center">
                 <h3 class="pb-4 mt-3 mb-0">Add Attendance</h3>
             </div>
@@ -13,17 +13,18 @@
                 </a>
             </div>
         </div>
+
         <div class="row">
             <div class="col-lg-8">
                 <div class="card shadow-lg p-4 ms-4">
 
-                    <!-- Blade alert for success -->
+                    <!-- Success Alert -->
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show w-100" role="alert">
                             {{ session('success') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                        {{ session()->forget('success') }} {{-- Clear session --}}
+                        {{ session()->forget('success') }}
                     @endif
 
                     <form id="requestForm" action="{{ route('add.attendance') }}" method="POST" class="container">
@@ -31,12 +32,16 @@
 
                         <input type="hidden" name="site_id" value="{{ $siteId }}">
 
-                        <!-- Row for Date Picker (Top-right) -->
+                        <!-- Date Picker -->
                         <div class="row">
                             <div class="col-md-12 text-end">
                                 <div class="form-group">
-                                    <label for="date" class="fw-bold">Date</label>
-                                    <input type="date" class="form-control w-auto d-inline-block" name="date" />
+                                    <label for="todayDate" class="fw-bold">Date</label>
+                                    <input type="date" id="todayDate"
+                                           class="form-control w-auto d-inline-block"
+                                           name="date"
+                                           value="{{ old('date') }}"
+                                           required>
                                 </div>
                                 @error('date')
                                     <div class="text-danger">{{ $message }}</div>
@@ -44,37 +49,29 @@
                             </div>
                         </div>
 
-                        <!-- Row 1: Labels for Category and Count -->
+                        <!-- Labels -->
                         <div class="row align-items-center mt-4">
-                            <!-- Category Label -->
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="category" class="fw-bold">Category</label>
-                                </div>
+                                <label class="fw-bold">Category</label>
                             </div>
-
-                            <!-- Count Label -->
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="amount" class="fw-bold">Count</label>
-                                </div>
+                                <label class="fw-bold">Count</label>
                             </div>
                         </div>
 
-                        <!-- Category & Count Input -->
-                        @foreach (['kothanar', 'sithal', 'mesthiri', 'engineer'] as $category)
+                        <!-- Category & Count Inputs -->
+                        @foreach (['Mason', 'Helper', 'Fitter', 'Centring Helper'] as $category)
                             <div class="row align-items-center mt-3">
                                 <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" for="count_{{ $category }}"
-                                            value="{{ ucfirst($category) }}">
-                                    </div>
+                                    <input type="text" class="form-control"
+                                           value="{{ ucfirst($category) }}" readonly>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <input type="number" class="form-control no-arrow" min="0" step="1" name="count_{{ $category }}"
-                                            placeholder="Enter Count">
-                                    </div>
+                                    <input type="number" class="form-control no-arrow"
+                                           min="0" step="1"
+                                           name="count_{{ $category }}"
+                                           value="{{ old('count_' . $category) }}"
+                                           placeholder="Enter Count">
                                     @error('count_' . $category)
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -82,17 +79,16 @@
                             </div>
                         @endforeach
 
-                        <!-- Submit Button -->
-                        <div class="col-lg-2 ms-auto">
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary w-100">Submit</button>
-                            </div>
+                        <!-- Submit -->
+                        <div class="col-lg-2 ms-auto mt-4">
+                            <button type="submit" class="btn btn-primary w-100">Submit</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Spinner -->
     <div class="d-flex justify-content-center mt-3">
         <div class="spinner-border text-primary d-none" role="status" id="loadingSpinner">
@@ -103,35 +99,25 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            let dateInput = document.getElementById("todayDate");
-            // Set default value to today's date
-            let today = new Date().toISOString().split('T')[0];
-            dateInput.value = today;
-            // Allow users to change the date freely
-            dateInput.addEventListener("change", function() {
-                console.log("Selected Date:", dateInput.value);
-            });
-        });
-        document.addEventListener("DOMContentLoaded", function() {
-            let alert = document.querySelector('.alert');
             const form = document.getElementById('requestForm');
             const spinner = document.getElementById('loadingSpinner');
+            const alert = document.querySelector('.alert');
 
-            //Success alert handling
+            // ✅ Spinner show on submit
+            if (form && spinner) {
+                form.addEventListener('submit', function() {
+                    spinner.classList.remove('d-none');
+                });
+            }
+
+            // ✅ Success alert fade and redirect
             if (alert) {
                 setTimeout(() => {
                     alert.classList.remove('show');
                     alert.classList.add('fade');
                     const siteId = "{{ $siteId }}";
-                    window.location.href = "/admin/attendance/" + siteId;
-                }, 500);
-            }
-
-            //Show spinner only on job form submission
-            if (form && spinner) {
-                form.addEventListener('submit', function(event) {
-                    spinner.classList.remove('d-none'); //Show spinner
-                });
+                    window.location.href = "/admin/public/admin/attendance/" + siteId;
+                }, 1000);
             }
         });
     </script>

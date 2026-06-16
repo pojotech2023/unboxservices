@@ -8,7 +8,7 @@
                     <h3 class="fw-bold mb-3">{{ ucfirst($materialType) }} Details</h3>
                     <ul class="breadcrumbs mb-0">
                         <li class="nav-home">
-                            <a href="#">
+                            <a href="{{ route('admin.dashboard') }}">
                                 <i class="icon-home"></i>
                             </a>
                         </li>
@@ -16,7 +16,7 @@
                             <i class="icon-arrow-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="#">Material Details</a>
+                            <a href="{{ route('sitemanagement.list') }}">Site</a>
                         </li>
                         <li class="separator">
                             <i class="icon-arrow-right"></i>

@@ -2,9 +2,15 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
-            <div class="col-lg-10">
-                <h3 class="text-center pb-4 mt-3">Add New property</h3>
+        <div class="row align-items-center">
+            <div class="col-lg-10 d-flex justify-content-center">
+                <h3 class="pb-4 mt-3 mb-0">Add New property</h3>
+            </div>
+            <div class="col-lg-2 text-end">
+                <a href="{{ route('property-list') }}"
+                    class="btn btn-outline-primary rounded-pill mt-3">
+                    ← Back
+                </a>
             </div>
         </div>
         <div class="row">

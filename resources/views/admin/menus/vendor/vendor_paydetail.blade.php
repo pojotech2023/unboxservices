@@ -190,7 +190,7 @@
                                     <select class="form-select form-control" name="payment_mode" id="payment_mode">
                                         <option value="">Select Payment Mode</option>
                                         <option value="Online">Online</option>
-                                        <option value="Check">Check</option>
+                                        <option value="Cheque">Cheque</option>
                                         <option value="Net Banking">Net Banking</option>
                                         <option value="Cash">Cash</option>
                                     </select>
@@ -246,10 +246,16 @@
                     success: function(response) {
                         $('#loadingSpinner').addClass('d-none');
                         if (response.status === 'success') {
+                            //Close the modal
+                            $('#addModal').modal('hide');
                             // Open WhatsApp tabs with delay
-                            window.open(response.whatsapp_url, '_blank');
+                            //window.open(response.whatsapp_url, '_blank');
                             form[0].reset();
-                        }
+                            //Refresh the page after 1 second
+                            setTimeout(function () {
+                                    location.reload();
+                                }, 1000);
+                            }
                     },
                     error: function(xhr) {
                         $('#loadingSpinner').addClass('d-none');

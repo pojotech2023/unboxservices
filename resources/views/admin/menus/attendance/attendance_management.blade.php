@@ -7,16 +7,16 @@
                 <div class="d-flex align-items-center">
                     <h3 class="fw-bold mb-3">Attendance Details</h3>
                     <ul class="breadcrumbs mb-0">
-                        <li class="nav-home">
-                            <a href="#">
-                                <i class="icon-home"></i>
-                            </a>
+                         <li class="nav-home">
+                        <a href="{{ route('admin.dashboard') }}">
+                            <i class="icon-home"></i>
+                        </a>
                         </li>
                         <li class="separator">
                             <i class="icon-arrow-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="#">Site</a>
+                            <a href="{{ route('sitemanagement.list') }}">Site</a>
                         </li>
                         <li class="separator">
                             <i class="icon-arrow-right"></i>
@@ -41,10 +41,9 @@
                             <!-- Month Picker -->
                             <div class="row mb-2 align-items-end pb-3" style="border-bottom: 1px solid #ebecec;">
                                 <div class="col-md-2">
-                                    <input type="month" id="monthPicker" class="form-control"
-                                        value="{{ request('month') ?? now()->format('Y-m') }}">
-                                </div>
-
+    <input type="month" id="monthPicker" class="form-control"
+        value="{{ request('month') ?? '' }}">
+</div>
                                 <!-- Week Buttons -->
                                 <div class="row justify-content-center">
                                     @for ($i = 1; $i <= $totalWeeks; $i++)
@@ -85,7 +84,7 @@
 
                             <!-- Total Workers Section -->
                             <div class="d-flex align-items-center mt-3">
-                                <h4 class="card-title" style="margin-right: 600px;">Total Workers</h4>
+                                <h4 class="card-title" style="margin-right: 302px;">Total Workers</h4>
                                 <div class="col-md-2 ms-3">
                                     <a href="{{ route('wages.form', ['siteId' => $siteId]) }}"
                                         class="btn btn-info w-100">Add Wages</a>
@@ -94,6 +93,12 @@
                                     <a href="{{ route('attendance.form', ['siteId' => $siteId]) }}"
                                         class="btn btn-primary w-100">Add Attendance</a>
                                 </div>
+                                <div class="col-md-2 ms-3">
+    <a href="{{ route('attendance.export', ['siteId' => $siteId, 'month' => request('month'), 'week' => request('week')]) }}"
+       class="btn btn-success">
+        Export to Excel
+    </a>
+</div>
                             </div>
                         </div>
 
@@ -151,43 +156,47 @@
                                             });
                                         @endphp
 
-                                        @foreach ($attendances as $attendance)
-                                            @php
-                                                $dateKey = \Carbon\Carbon::parse($attendance->date)->toDateString();
-                                                $key = $attendance->category . '|' . $dateKey;
-                                                $amount = $wagesByCategory[$key]->amount ?? 0;
-                                                $categoryWage = $attendance->count * $amount;
-                                            @endphp
-                                            <div class="col-sm-6 col-md-4">
-                                                <div class="card card-stats card-round border border-info">
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="col-7 col-stats">
-                                                                <div class="numbers">
-                                                                    <h4 class="card-title">{{ $attendance->count ?? 0 }}
-                                                                    </h4>
-                                                                    <div
-                                                                        style="display: flex; align-items: center; gap: 5px;">
-                                                                        <h6 class="card-title mb-0">
-                                                                            {{ ucfirst($attendance->category) }}</h6>
-                                                                        <p class="card-category mb-0"
-                                                                            style="white-space: nowrap;">
-                                                                            X ₹{{ $amount }} =
-                                                                            <strong>₹{{ $categoryWage }}</strong>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-5">
-                                                                <div class="icon-big text-center">
-                                                                    <i class="fas fa-users text-info"></i>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                       @foreach ($attendances as $attendance)
+    @php
+        $attendanceDate = \Carbon\Carbon::parse($attendance->date);
+        $category = $attendance->category;
+
+        // Get latest applicable wage
+        $amount = 0;
+        $categoryWages = $wages->where('category', $category)
+                                ->where('date', '<=', $attendanceDate->toDateString())
+                                ->sortByDesc('date');
+        if ($categoryWages->isNotEmpty()) {
+            $amount = $categoryWages->first()->amount;
+        }
+
+        $categoryWage = $attendance->count * $amount;
+    @endphp
+    <div class="col-sm-6 col-md-4">
+        <div class="card card-stats card-round border border-info">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <h4 class="card-title">{{ $attendance->count ?? 0 }}</h4>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <h6 class="card-title mb-0">{{ ucfirst($attendance->category) }}</h6>
+                                <p class="card-category mb-0" style="white-space: nowrap;">
+                                    X ₹{{ $amount }} = <strong>₹{{ $categoryWage }}</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-users text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
                                     </div>
                                 </div>
                             @endif
@@ -197,7 +206,7 @@
                                         <div class="card-body">
                                             <div class="row align-items-center">
                                                 <div class="col-6 text-center">
-                                                    <img src="{{ asset('images/valli-homes/wages.jpg') }}"
+                                                    <img src="{{ asset('images/sri/wages.jpg') }}"
                                                         style="width: 100px; height: 100px; object-fit: cover;">
                                                 </div>
                                                 <div class="col-6 text-start">
@@ -237,7 +246,7 @@
             monthPicker.addEventListener('change', function() {
                 currentSelectedMonth = this.value;
                 if (currentSelectedMonth) {
-                    window.location.href = `/admin/attendance/${siteId}?month=${currentSelectedMonth}`;
+                    window.location.href = `/admin/public/admin/attendance/${siteId}?month=${currentSelectedMonth}`;
                 }
             });
 
@@ -250,7 +259,7 @@
 
                     if (currentSelectedMonth && selectedWeek) {
                         window.location.href =
-                            `/admin/attendance/${siteId}?month=${currentSelectedMonth}&week=${selectedWeek}`;
+                            `/admin/public/admin/attendance/${siteId}?month=${currentSelectedMonth}&week=${selectedWeek}`;
                     }
                 });
             });
@@ -264,7 +273,7 @@
                     const selectedWeek = getQueryParam('week');
 
                     if (selectedDateStr) {
-                        let url = `/admin/attendance/${siteId}?date=${selectedDateStr}`;
+                        let url = `/admin/public/admin/attendance/${siteId}?date=${selectedDateStr}`;
                         if (selectedMonth) url += `&month=${selectedMonth}`;
                         if (selectedWeek) url += `&week=${selectedWeek}`;
                         window.location.href = url;

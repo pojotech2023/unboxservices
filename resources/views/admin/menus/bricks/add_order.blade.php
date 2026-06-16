@@ -127,9 +127,20 @@
                                 <div class="form-group">
                                     <select class="form-select form-control" name="unit"
                                         id="unit">
+                                       
                                         <option value="">Select Unit</option>
                                         <option value="Load">Load</option>
                                         <option value="Pack">Pack</option>
+                                        <option value="Ltr">Ltr</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="Pieces"> Pieces</option>
+                                        <option value="M cube">M cube</option>
+                                        <option value="CFT">CFT</option>
+                                        <option value="unit">unit</option>
+                                        <option value="Bag">Bag</option>
+                                        <option value="Tons">Tons</option>
+                                        <option value="numbers">numbers</option>
+                                        
                                     </select>
                                 </div>
                                 @error('unit')

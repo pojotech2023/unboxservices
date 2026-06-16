@@ -48,11 +48,11 @@
                                 class="avatar-img rounded-circle" />
                         </div>
                         <span class="profile-username">
-                            <span class="fw-bold">{{ Auth::guard('admin')->user()->name ?? 'Guest' }}</span><br>
-                            <span class="op-7">{{ session('role_name') ?? 'User' }}</span>
+                            <span class="fw-bold">Unbox Service center</span><br>
+                            <span class="op-7">Admin</span>
                         </span>
                     </a>
-                    <ul class="dropdown-menu dropdown-user animated fadeIn">
+                    <!-- <ul class="dropdown-menu dropdown-user animated fadeIn">
                         <div class="dropdown-user-scroll scrollbar-outer">
                             <li>
                                 <div class="dropdown-divider"></div>
@@ -71,7 +71,7 @@
                                   </form> --}}
                             </li>
                         </div>
-                    </ul>
+                    </ul> -->
                 </li>
             </ul>
         </div>

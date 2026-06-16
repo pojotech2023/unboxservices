@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\RoleMapping;
 
 class User extends Authenticatable
 {
@@ -56,4 +57,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(DeviceToken::class, 'user_id');
     }
+ public function roleMappings()
+{
+    return $this->hasMany(RoleMapping::class, 'user_id');
+}
+    
 }

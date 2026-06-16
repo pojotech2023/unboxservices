@@ -6,7 +6,7 @@
                 <h3 class="fw-bold mb-3">Update Customer</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
-                        <a href="#">
+                        <a href="{{ route('admin.dashboard') }}">
                             <i class="icon-home"></i>
                         </a>
                     </li>
@@ -14,13 +14,13 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Customer</a>
+                        <a href="{{ route('customer.list') }}">Customer Management</a>
                     </li>
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Customer Form</a>
+                        <a href="#">Update Customer</a>
                     </li>
                 </ul>
             </div>
