@@ -158,11 +158,6 @@ body { background:#f4f6f8; font-family:'Nunito Sans',sans-serif; }
                                 <span class="age-radio-icon">{{ $icons[$i] ?? '📦' }}</span>
                             @endif
                             <div class="age-radio-label">{{ $opt->label }}</div>
-                            @if(($opt->deduction ?? 0) > 0)
-                                <span class="age-radio-ded">-₹{{ number_format($opt->deduction) }}</span>
-                            @else
-                                <span class="age-radio-free">No deduction</span>
-                            @endif
                         </div>
                         @endforeach
                     </div>

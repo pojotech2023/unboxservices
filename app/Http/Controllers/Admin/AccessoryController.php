@@ -19,10 +19,11 @@ class AccessoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'items'                    => 'required|array|min:1',
-            'items.*.description'      => 'required|string|max:255',
-            'items.*.small_description'=> 'nullable|string|max:255',
-            'items.*.image'            => 'required|image|max:2048',
+            'items'                     => 'required|array|min:1',
+            'items.*.description'       => 'required|string|max:255',
+            'items.*.small_description' => 'nullable|string|max:255',
+            'items.*.deduction_amount'  => 'nullable|numeric|min:0',
+            'items.*.image'             => 'required|image|max:2048',
         ]);
 
         foreach ($request->items as $item) {
@@ -30,8 +31,9 @@ class AccessoryController extends Controller
             VariantAccessory::create([
                 'description'       => $item['description'],
                 'small_description' => $item['small_description'] ?? null,
+                'deduction_amount'  => $item['deduction_amount'] ?? 0,
                 'image'             => $path,
-                'sort_order'        => VariantAccessory::max('sort_order') + 1,
+                'sort_order'        => (VariantAccessory::max('sort_order') ?? 0) + 1,
             ]);
         }
 
@@ -43,12 +45,14 @@ class AccessoryController extends Controller
         $request->validate([
             'description'       => 'required|string|max:255',
             'small_description' => 'nullable|string|max:255',
+            'deduction_amount'  => 'nullable|numeric|min:0',
             'image'             => 'nullable|image|max:2048',
         ]);
 
         $data = [
             'description'       => $request->description,
             'small_description' => $request->small_description,
+            'deduction_amount'  => $request->deduction_amount ?? 0,
         ];
 
         if ($request->hasFile('image')) {

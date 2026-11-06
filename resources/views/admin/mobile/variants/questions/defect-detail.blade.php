@@ -75,7 +75,7 @@
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="row g-3 align-items-center">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label fw-semibold small">
                                             <i class="fas fa-image me-1"></i>Image <span class="text-danger">*</span>
                                         </label>
@@ -87,10 +87,17 @@
                                                  style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #dee2e6;">
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Description <span class="text-danger">*</span></label>
                                         <input type="text" name="images[0][description]" class="form-control form-control-sm"
                                                placeholder="e.g. Light hairline scratch" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold small text-danger">
+                                            <i class="fas fa-minus-circle me-1"></i>Deduction (₹)
+                                        </label>
+                                        <input type="number" name="images[0][deduction_amount]" class="form-control form-control-sm"
+                                               value="0" min="0" placeholder="e.g. 500">
                                     </div>
                                 </div>
                             </div>
@@ -159,7 +166,7 @@
                               method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row g-3 align-items-end">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label class="form-label fw-semibold small">Image <span class="text-danger">*</span></label>
                                     <input type="file" name="image" class="form-control form-control-sm inline-img-input"
                                            accept="image/*" required>
@@ -168,10 +175,15 @@
                                              style="width:60px;height:60px;object-fit:cover;border-radius:6px;border:2px solid #dee2e6;">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <label class="form-label fw-semibold small">Description <span class="text-danger">*</span></label>
                                     <input type="text" name="description" class="form-control form-control-sm"
                                            placeholder="e.g. Deep gouge" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-semibold small text-danger"><i class="fas fa-minus-circle me-1"></i>Deduction (₹)</label>
+                                    <input type="number" name="deduction_amount" class="form-control form-control-sm"
+                                           value="0" min="0" placeholder="e.g. 500">
                                 </div>
                                 <div class="col-md-2">
                                     <button type="submit" class="btn btn-success btn-sm w-100">
@@ -202,12 +214,16 @@
                                            title="{{ $img->description }}">
                                             {{ $img->description }}
                                         </p>
+                                        @if(($img->deduction_amount ?? 0) > 0)
+                                        <span class="badge bg-danger mt-1">-₹{{ number_format($img->deduction_amount) }}</span>
+                                        @endif
                                     </div>
                                     <div class="card-footer p-1 bg-transparent border-top">
                                         <button type="button" class="btn btn-warning btn-sm btn-edit-section-image"
                                                 data-id="{{ $img->id }}"
                                                 data-desc="{{ addslashes($img->description) }}"
-                                                data-img="{{ asset('storage/'.$img->image) }}">
+                                                data-img="{{ asset('storage/'.$img->image) }}"
+                                                data-deduction="{{ $img->deduction_amount ?? 0 }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <form action="{{ route('brands.models.variants.defects.sections.images.destroy', $img->id) }}"
@@ -295,6 +311,10 @@
                         <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
                         <input type="text" name="description" id="editSectionImageDesc" class="form-control" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-danger"><i class="fas fa-minus-circle me-1"></i>Deduction (₹)</label>
+                        <input type="number" name="deduction_amount" id="editSectionImageDeduction" class="form-control" min="0" value="0">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -331,11 +351,13 @@ document.addEventListener('DOMContentLoaded', function () {
         var html = '<div class="section-image-row border rounded p-3 mb-2 bg-white position-relative">' +
             '<button type="button" class="btn btn-sm btn-outline-danger remove-section-image-row position-absolute" style="top:8px;right:8px;"><i class="fas fa-times"></i></button>' +
             '<div class="row g-3 align-items-center">' +
-            '<div class="col-md-4"><label class="form-label fw-semibold small"><i class="fas fa-image me-1"></i>Image <span class="text-danger">*</span></label>' +
+            '<div class="col-md-3"><label class="form-label fw-semibold small"><i class="fas fa-image me-1"></i>Image <span class="text-danger">*</span></label>' +
             '<input type="file" name="images[' + sectionImgIndex + '][image]" class="form-control form-control-sm section-img-input" accept="image/*" required>' +
             '<div class="mt-2 section-img-preview" style="display:none;"><img src="" alt="preview" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #dee2e6;"></div></div>' +
-            '<div class="col-md-8"><label class="form-label fw-semibold small">Description <span class="text-danger">*</span></label>' +
+            '<div class="col-md-6"><label class="form-label fw-semibold small">Description <span class="text-danger">*</span></label>' +
             '<input type="text" name="images[' + sectionImgIndex + '][description]" class="form-control form-control-sm" placeholder="e.g. Light hairline scratch" required></div>' +
+            '<div class="col-md-3"><label class="form-label fw-semibold small text-danger"><i class="fas fa-minus-circle me-1"></i>Deduction (₹)</label>' +
+            '<input type="number" name="images[' + sectionImgIndex + '][deduction_amount]" class="form-control form-control-sm" value="0" min="0" placeholder="e.g. 500"></div>' +
             '</div></div>';
         container.insertAdjacentHTML('beforeend', html);
         sectionImgIndex++;
@@ -412,8 +434,10 @@ document.addEventListener('DOMContentLoaded', function () {
             var id   = this.getAttribute('data-id');
             var desc = this.getAttribute('data-desc');
             var img  = this.getAttribute('data-img');
+            var deduction = this.getAttribute('data-deduction') || 0;
             document.getElementById('editSectionImageForm').action          = imgUpdateBase.replace('IID', id);
             document.getElementById('editSectionImageDesc').value           = desc;
+            document.getElementById('editSectionImageDeduction').value      = deduction;
             document.getElementById('editSectionImagePreview').src          = img;
             document.getElementById('editSectionImageInput').value          = '';
             new bootstrap.Modal(document.getElementById('editSectionImageModal')).show();

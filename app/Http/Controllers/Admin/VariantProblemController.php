@@ -5,25 +5,27 @@ use App\Models\VariantProblem;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+
 class VariantProblemController extends Controller
 {
     public function store(Request $request)
 {
     $request->validate([
-        'problems'              => 'required|array|min:1',
-        'problems.*.image'      => 'required|image|max:2048',
-        'problems.*.description'=> 'required|string|max:255',
+        'problems'                    => 'required|array|min:1',
+        'problems.*.image'            => 'required|image|max:2048',
+        'problems.*.description'      => 'required|string|max:255',
+        'problems.*.deduction_amount' => 'nullable|numeric|min:0',
     ]);
  
-    // Get variant_id from session or pass as hidden input
-    $variantId = session('current_variant_id'); // or $request->variant_id
+    $variantId = session('current_variant_id') ?? $request->variant_id;
  
     foreach ($request->problems as $p) {
         $path = $p['image']->store('variant-problems', 'public');
         VariantProblem::create([
-            'mobile_variant_id'  => $variantId,
-            'image'       => $path,
-            'description' => $p['description'],
+            'mobile_variant_id' => $variantId,
+            'image'             => $path,
+            'description'       => $p['description'],
+            'deduction_amount'  => $p['deduction_amount'] ?? 0,
         ]);
     }
  
@@ -33,11 +35,15 @@ class VariantProblemController extends Controller
 public function update(Request $request, VariantProblem $problem)
 {
     $request->validate([
-        'image'       => 'nullable|image|max:2048',
-        'description' => 'required|string|max:255',
+        'image'            => 'nullable|image|max:2048',
+        'description'      => 'required|string|max:255',
+        'deduction_amount' => 'nullable|numeric|min:0',
     ]);
  
-    $data = ['description' => $request->description];
+    $data = [
+        'description'      => $request->description,
+        'deduction_amount' => $request->deduction_amount ?? 0,
+    ];
  
     if ($request->hasFile('image')) {
         Storage::disk('public')->delete($problem->image);

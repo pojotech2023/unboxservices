@@ -91,16 +91,6 @@
                             </a>
                         </div> -->
 
-                        {{-- Pricing Status Badge --}}
-                        @if($model->evaluationPricing)
-                            <div class="pricing-badge pricing-badge-done">
-                                <i class="fas fa-check-circle me-1"></i> Evaluation Pricing Added
-                            </div>
-                        @else
-                            <div class="pricing-badge pricing-badge-pending">
-                                <i class="fas fa-exclamation-circle me-1"></i> Pricing Not Added
-                            </div>
-                        @endif
 
                         {{-- Actions --}}
                         <div class="model-card-actions">
@@ -117,24 +107,6 @@
                                 <i class="fas fa-pen"></i>
                             </a>
 
-                            {{-- Pricing Button --}}
-                            @if($model->evaluationPricing)
-                                <button type="button"
-                                        class="bca-btn bca-price-view"
-                                        title="View / Edit Pricing"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#viewPricingModal{{ $model->id }}">
-                                    <i class="fas fa-rupee-sign"></i>
-                                </button>
-                            @else
-                                <button type="button"
-                                        class="bca-btn bca-price-add"
-                                        title="Add Evaluation Pricing"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#addPricingModal{{ $model->id }}">
-                                    <i class="fas fa-tags"></i>
-                                </button>
-                            @endif
 
                             <form action="{{ route('laptop.brands.models.destroy', [$laptopBrand->id, $model->id]) }}"
                                   method="POST" class="d-inline"
@@ -429,12 +401,6 @@ document.getElementById('modelSearch').addEventListener('input', function(){
     });
 });
 
-function toggleLaptopEdit(modelId) {
-    const sec = document.getElementById('laptopEditSection' + modelId);
-    sec.classList.toggle('active');
-    if (sec.classList.contains('active')) {
-        setTimeout(() => sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
-    }
 }
 </script>
 

@@ -311,8 +311,14 @@ body { background:#f7f8fa; font-family:'Nunito Sans',sans-serif; }
                     <div class="co-price-section">Price Summary</div>
                     <div class="co-price-row">
                         <span class="lbl">Base Price</span>
-                        <span class="val">₹{{ number_format((float) $evaluation->estimated_price) }}</span>
+                        <span class="val">₹{{ number_format((float) ($evaluation->base_price ?? $evaluation->estimated_price)) }}</span>
                     </div>
+                    @if(($evaluation->total_deduction ?? 0) > 0)
+                    <div class="co-price-row" style="color:#e53935;">
+                        <span class="lbl" style="color:#e53935;">Total Deductions</span>
+                        <span class="val" style="color:#e53935;">-₹{{ number_format((float) $evaluation->total_deduction) }}</span>
+                    </div>
+                    @endif
                 </div>
                 <div class="co-price-total">
                     <span class="lbl">Total Amount</span>

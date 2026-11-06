@@ -66,6 +66,7 @@ class VariantQuestionsController extends Controller
             'questions.*.small_description'  => 'nullable|string|max:500',
             'questions.*.yes_answer'         => 'required|string|max:100',
             'questions.*.no_answer'          => 'required|string|max:100',
+            'questions.*.deduction_amount'   => 'nullable|numeric|min:0',
         ]);
 
         $lastOrder = VariantQuestion::whereNull('mobile_variant_id')->max('sort_order') ?? 0;
@@ -77,6 +78,7 @@ class VariantQuestionsController extends Controller
                 'small_description' => $q['small_description'] ?? null,
                 'yes_answer'        => $q['yes_answer'],
                 'no_answer'         => $q['no_answer'],
+                'deduction_amount'  => $q['deduction_amount'] ?? 0,
                 'sort_order'        => $lastOrder + $i + 1,
             ]);
         }
@@ -90,9 +92,10 @@ class VariantQuestionsController extends Controller
     public function storeCommonDefects(Request $request)
     {
         $request->validate([
-            'defects'               => 'required|array|min:1',
-            'defects.*.image'       => 'required|image|mimes:jpeg,png,jpg,webp,avif|max:2048',
-            'defects.*.description' => 'required|string|max:255',
+            'defects'                    => 'required|array|min:1',
+            'defects.*.image'            => 'required|image|mimes:jpeg,png,jpg,webp,avif|max:2048',
+            'defects.*.description'      => 'required|string|max:255',
+            'defects.*.deduction_amount' => 'nullable|numeric|min:0',
         ]);
 
         $lastOrder = VariantDefect::whereNull('mobile_variant_id')->max('sort_order') ?? 0;
@@ -104,6 +107,7 @@ class VariantQuestionsController extends Controller
                 'mobile_variant_id' => null,
                 'image'             => $path,
                 'description'       => $d['description'],
+                'deduction_amount'  => $d['deduction_amount'] ?? 0,
                 'sort_order'        => $lastOrder + $i + 1,
             ]);
         }
@@ -121,9 +125,10 @@ class VariantQuestionsController extends Controller
             'small_description' => 'nullable|string|max:500',
             'yes_answer'        => 'required|string|max:100',
             'no_answer'         => 'required|string|max:100',
+            'deduction_amount'  => 'nullable|numeric|min:0',
         ]);
 
-        $question->update($request->only('question', 'small_description', 'yes_answer', 'no_answer'));
+        $question->update($request->only('question', 'small_description', 'yes_answer', 'no_answer', 'deduction_amount'));
 
         return back()->with('success', 'Question updated!');
     }
@@ -143,11 +148,15 @@ class VariantQuestionsController extends Controller
     public function updateDefect(Request $request, VariantDefect $defect)
     {
         $request->validate([
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:2048',
-            'description' => 'required|string|max:255',
+            'image'            => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:2048',
+            'description'      => 'required|string|max:255',
+            'deduction_amount' => 'nullable|numeric|min:0',
         ]);
 
-        $data = ['description' => $request->description];
+        $data = [
+            'description'      => $request->description,
+            'deduction_amount' => $request->deduction_amount ?? 0,
+        ];
 
         if ($request->hasFile('image')) {
             Storage::disk('public')->delete($defect->image);

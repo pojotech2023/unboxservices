@@ -266,7 +266,8 @@ class SellController extends Controller
         $selectedProblems = VariantProblem::whereIn('id', $problemIds)->get();
 
         $brands = MobileBrand::all();
-        $evaluationPrice = $this->resolveEvaluationPriceForVariant($model, $variantId, $variant->price);
+        $calc = $this->calculateMobileEvaluation($variant, $savedAnswers, $defectIds, $sectionAnswers, $problemIds, null);
+        $evaluationPrice = $calc['final_price'];
 
         return view('sell.accessories', compact(
             'brand', 'model', 'variant',
@@ -430,14 +431,12 @@ public function logout()
                              ->where('mobile_model_id', $model->id)
                              ->firstOrFail();
  
-    $price = $this->resolveEvaluationPriceForVariant($model, $variantId, $variant->price);
- 
     // ── 3. Pull ALL evaluation data from session ─────────────────────────────
     $evalAnswers    = session('sell_answers_'         . $variantId, []);
     $defectIds      = session('sell_defect_ids_'      . $variantId, []);
     $sectionAnswers = session('sell_section_answers_' . $variantId, []);
     $problemIds     = session('sell_problem_ids_'     . $variantId, []);
- 
+
     // ── 4. Parse accessory IDs ───────────────────────────────────────────────
     $accessoryIds = [];
     if ($request->filled('accessory_ids')) {
@@ -445,16 +444,26 @@ public function logout()
             array_map('intval', explode(',', $request->input('accessory_ids')))
         ));
     }
- 
+
+    // ── Calculate dynamic deductions & final price ─────────────────────────
+    $calc = $this->calculateMobileEvaluation($variant, $evalAnswers, $defectIds, $sectionAnswers, $problemIds, $accessoryIds);
+    $price               = $calc['final_price'];
+    $basePrice           = $calc['base_price'];
+    $totalDeduction      = $calc['total_deduction'];
+    $deductionsBreakdown = $calc['deductions_breakdown'];
+
     // ── 5. Build answers payload ─────────────────────────────────────────────
     $answersPayload = [
-        'eval_answers'    => $evalAnswers,
-        'defect_ids'      => $defectIds,
-        'section_answers' => $sectionAnswers,
-        'problem_ids'     => $problemIds,
-        'accessory_ids'   => $accessoryIds,
+        'eval_answers'         => $evalAnswers,
+        'defect_ids'           => $defectIds,
+        'section_answers'      => $sectionAnswers,
+        'problem_ids'          => $problemIds,
+        'accessory_ids'        => $accessoryIds,
+        'deductions_breakdown' => $deductionsBreakdown,
+        'base_price'           => $basePrice,
+        'total_deduction'      => $totalDeduction,
     ];
- 
+
     // ── 6. Save evaluation to DB ─────────────────────────────────────────────
     $evaluation = \App\Models\DeviceEvaluation::create([
         'customer_name'   => $name,
@@ -464,17 +473,19 @@ public function logout()
         'variant_id'      => $variantId,
         'device_type'     => 'mobile',
         'answers'         => $answersPayload,
+        'base_price'      => $basePrice,
+        'total_deduction' => $totalDeduction,
         'estimated_price' => $price,
         'status'          => 'pending',
         'otp_verified'    => true,
         'otp_verified_at' => now(),
     ]);
- 
+
     // ── 7. Save accessories to pivot table if relation exists ────────────────
     if (!empty($accessoryIds) && method_exists($evaluation, 'accessories')) {
         $evaluation->accessories()->sync($accessoryIds);
     }
- 
+
     // ── 8. Clear session data for this variant ───────────────────────────────
     Session::forget([
         'sell_answers_'         . $variantId,
@@ -484,25 +495,26 @@ public function logout()
         'sell_no_defects_'      . $variantId,
         'sell_no_problems_'     . $variantId,
     ]);
- 
+
     // ── 9. Store quote data in session ──────────────────────────────────────
     session([
         'sell_eval_success' => [
-            'evaluation_id' => $evaluation->id,
-            'name'          => $name,
-            'mobile'        => $mobile,
-            'brand'         => $brand->name,
-            'brand_slug'    => $brand->slug,
-            'model'         => $model->name,
-            'model_slug'    => $model->slug,
-            'variant'       => $variant->memory,
-            'price'         => $price,
-            'base_price'    => $price,
-            'deduction'     => 0,
-            'accessories'   => $accessoryIds,
-            'defects'       => $defectIds,
-            'problems'      => $problemIds,
-            'model_image'   => $model->image,
+            'evaluation_id'        => $evaluation->id,
+            'name'                 => $name,
+            'mobile'               => $mobile,
+            'brand'                => $brand->name,
+            'brand_slug'           => $brand->slug,
+            'model'                => $model->name,
+            'model_slug'           => $model->slug,
+            'variant'              => $variant->memory,
+            'price'                => $price,
+            'base_price'           => $basePrice,
+            'deduction'            => $totalDeduction,
+            'deductions_breakdown' => $deductionsBreakdown,
+            'accessories'          => $accessoryIds,
+            'defects'              => $defectIds,
+            'problems'             => $problemIds,
+            'model_image'          => $model->image,
         ]
     ]);
 
@@ -525,22 +537,24 @@ public function phoneQuote(Request $request, string $brandSlug, string $modelSlu
 
     $data = session('sell_eval_success', []);
     if (empty($data) || (int) ($data['evaluation_id'] ?? 0) !== $evaluation->id) {
+        $answers = is_array($evaluation->answers) ? $evaluation->answers : json_decode($evaluation->answers, true);
         $data = [
-            'evaluation_id' => $evaluation->id,
-            'name'          => $evaluation->customer_name,
-            'mobile'        => $evaluation->customer_mobile,
-            'brand'         => $brand->name,
-            'brand_slug'    => $brand->slug,
-            'model'         => $model->name,
-            'model_slug'    => $model->slug,
-            'variant'       => $evaluation->variant->memory ?? '',
-            'price'         => (float) $evaluation->estimated_price,
-            'base_price'    => (float) $evaluation->estimated_price,
-            'deduction'     => 0,
-            'accessories'   => [],
-            'defects'       => [],
-            'problems'      => [],
-            'model_image'   => $model->image,
+            'evaluation_id'        => $evaluation->id,
+            'name'                 => $evaluation->customer_name,
+            'mobile'               => $evaluation->customer_mobile,
+            'brand'                => $brand->name,
+            'brand_slug'           => $brand->slug,
+            'model'                => $model->name,
+            'model_slug'           => $model->slug,
+            'variant'              => $evaluation->variant->memory ?? '',
+            'price'                => (float) $evaluation->estimated_price,
+            'base_price'           => (float) ($evaluation->base_price ?? $evaluation->estimated_price),
+            'deduction'            => (float) ($evaluation->total_deduction ?? 0),
+            'deductions_breakdown' => $answers['deductions_breakdown'] ?? [],
+            'accessories'          => [],
+            'defects'              => [],
+            'problems'             => [],
+            'model_image'          => $model->image,
         ];
     }
 
@@ -612,30 +626,122 @@ public function submitPhoneAddress(Request $request, int $evaluationId)
     return redirect()->route('sell.success');
 }
 
+    public function calculateMobileEvaluation(MobileVariant $variant, array $evalAnswers = [], array $defectIds = [], array $sectionAnswers = [], array $problemIds = [], ?array $accessoryIds = null): array
+    {
+        $basePrice = (float) $variant->price;
+        $breakdown = [];
+
+        // 1. Questions answered 'no'
+        if (!empty($evalAnswers)) {
+            $questions = \App\Models\VariantQuestion::whereIn('id', array_keys($evalAnswers))->get()->keyBy('id');
+            foreach ($evalAnswers as $qId => $ans) {
+                if ($ans === 'no' && isset($questions[$qId])) {
+                    $q = $questions[$qId];
+                    $amt = (float) ($q->deduction_amount ?? 0);
+                    if ($amt > 0) {
+                        $breakdown[] = [
+                            'type'   => 'question',
+                            'name'   => $q->question . ' (No)',
+                            'amount' => $amt,
+                        ];
+                    }
+                }
+            }
+        }
+
+        // 2. Defects & Defect Section Images
+        if (!empty($defectIds)) {
+            $defects = \App\Models\VariantDefect::whereIn('id', $defectIds)->get()->keyBy('id');
+            foreach ($defectIds as $dId) {
+                $defect = $defects[$dId] ?? null;
+                $defectName = $defect ? $defect->description : 'Defect #' . $dId;
+                
+                $defectHasSectionDeduction = false;
+                if (!empty($sectionAnswers[$dId])) {
+                    $imageIds = array_values($sectionAnswers[$dId]);
+                    $images = \App\Models\DefectSectionImage::whereIn('id', $imageIds)->get();
+                    foreach ($images as $img) {
+                        $amt = (float) ($img->deduction_amount ?? 0);
+                        if ($amt > 0) {
+                            $defectHasSectionDeduction = true;
+                            $breakdown[] = [
+                                'type'   => 'defect_section',
+                                'name'   => $defectName . ' - ' . $img->description,
+                                'amount' => $amt,
+                            ];
+                        }
+                    }
+                }
+
+                if (!$defectHasSectionDeduction && $defect) {
+                    $amt = (float) ($defect->deduction_amount ?? 0);
+                    if ($amt > 0) {
+                        $breakdown[] = [
+                            'type'   => 'defect',
+                            'name'   => $defectName,
+                            'amount' => $amt,
+                        ];
+                    }
+                }
+            }
+        }
+
+        // 3. Functional / Physical Problems
+        if (!empty($problemIds)) {
+            $problems = \App\Models\VariantProblem::whereIn('id', $problemIds)->get();
+            foreach ($problems as $prob) {
+                $amt = (float) ($prob->deduction_amount ?? 0);
+                if ($amt > 0) {
+                    $breakdown[] = [
+                        'type'   => 'problem',
+                        'name'   => $prob->description,
+                        'amount' => $amt,
+                    ];
+                }
+            }
+        }
+
+        // 4. Missing Accessories (deduct if configured and not selected)
+        if ($accessoryIds !== null) {
+            $allAccessories = \App\Models\VariantAccessory::all();
+            foreach ($allAccessories as $acc) {
+                if (!in_array($acc->id, $accessoryIds)) {
+                    $amt = (float) ($acc->deduction_amount ?? 0);
+                    if ($amt > 0) {
+                        $breakdown[] = [
+                            'type'   => 'accessory',
+                            'name'   => 'Missing: ' . $acc->description,
+                            'amount' => $amt,
+                        ];
+                    }
+                }
+            }
+        }
+
+        $totalDeduction = (float) array_sum(array_column($breakdown, 'amount'));
+        $finalPrice = max(0, $basePrice - $totalDeduction);
+
+        return [
+            'base_price'           => $basePrice,
+            'total_deduction'      => $totalDeduction,
+            'final_price'          => $finalPrice,
+            'deductions_breakdown' => $breakdown,
+        ];
+    }
+
     private function resolveEvaluationPriceForVariant(MobileModel $model, int $variantId, float $fallbackPrice): float
     {
-        $pricing = $model->evaluationPricing;
-        if (!$pricing) {
+        $variant = MobileVariant::find($variantId);
+        if (!$variant) {
             return $fallbackPrice;
         }
 
-        $answers = session('sell_answers_' . $variantId, []);
-        if (empty($answers)) {
-            return $fallbackPrice;
-        }
+        $savedAnswers   = session('sell_answers_' . $variantId, []);
+        $defectIds      = session('sell_defect_ids_' . $variantId, []);
+        $sectionAnswers = session('sell_section_answers_' . $variantId, []);
+        $problemIds     = session('sell_problem_ids_' . $variantId, []);
 
-        $totalAnswers = count($answers);
-        $yesCount = count(array_filter($answers, fn ($answer) => $answer === 'yes'));
-        $noCount = count(array_filter($answers, fn ($answer) => $answer === 'no'));
-
-        if ($yesCount === $totalAnswers) {
-            return (float) $pricing->full_positive_price;
-        }
-
-        if ($noCount === $totalAnswers) {
-            return (float) $pricing->full_negative_price;
-        }
-
-        return (float) $pricing->mixed_price;
+        $calc = $this->calculateMobileEvaluation($variant, $savedAnswers, $defectIds, $sectionAnswers, $problemIds, null);
+        return $calc['final_price'];
     }
 }

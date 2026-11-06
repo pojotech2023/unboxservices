@@ -21,6 +21,8 @@ class DeviceEvaluation extends Model
         'laptop_variant_id',
         'device_type',
         'answers',
+        'base_price',
+        'total_deduction',
         'estimated_price',
         'status',
         'otp_verified',

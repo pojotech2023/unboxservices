@@ -57,19 +57,26 @@
                                         <input type="text" name="questions[0][small_description]" class="form-control"
                                                placeholder="Optional hint or sub-text">
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label class="form-label fw-semibold text-success">
                                             <i class="fas fa-check-circle me-1"></i>Yes Answer <span class="text-danger">*</span>
                                         </label>
                                         <input type="text" name="questions[0][yes_answer]" class="form-control border-success"
                                                value="Yes" required>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label class="form-label fw-semibold text-danger">
                                             <i class="fas fa-times-circle me-1"></i>No Answer <span class="text-danger">*</span>
                                         </label>
                                         <input type="text" name="questions[0][no_answer]" class="form-control border-danger"
                                                value="No" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold text-warning">
+                                            <i class="fas fa-minus-circle me-1"></i>Deduction if No (₹)
+                                        </label>
+                                        <input type="number" name="questions[0][deduction_amount]" class="form-control"
+                                               value="0" min="0" placeholder="e.g. 500">
                                     </div>
                                 </div>
                             </div>
@@ -104,9 +111,10 @@
                                 <th width="40">#</th>
                                 <th>Question</th>
                                 <th>Description</th>
-                                <th width="130" class="text-center">Yes Answer</th>
-                                <th width="130" class="text-center">No Answer</th>
-                                <th width="130">Actions</th>
+                                <th width="110" class="text-center">Yes Answer</th>
+                                <th width="110" class="text-center">No Answer</th>
+                                <th width="120" class="text-center">Deduction (₹)</th>
+                                <th width="110">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,13 +129,21 @@
                                 <td class="text-center">
                                     <span class="badge bg-danger px-2 py-1">{{ $q->no_answer }}</span>
                                 </td>
+                                <td class="text-center">
+                                    @if(($q->deduction_amount ?? 0) > 0)
+                                    <span class="badge bg-danger px-2 py-1">-₹{{ number_format($q->deduction_amount) }}</span>
+                                    @else
+                                    <span class="badge bg-secondary px-2 py-1">₹0</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-warning btn-sm btn-edit-question"
                                             data-id="{{ $q->id }}"
                                             data-question="{{ addslashes($q->question) }}"
                                             data-desc="{{ addslashes($q->small_description ?? '') }}"
                                             data-yes="{{ addslashes($q->yes_answer) }}"
-                                            data-no="{{ addslashes($q->no_answer) }}">
+                                            data-no="{{ addslashes($q->no_answer) }}"
+                                            data-deduction="{{ $q->deduction_amount ?? 0 }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <form action="{{ route('brands.models.variants.questions.destroy', $q->id) }}"
@@ -172,7 +188,7 @@
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="row g-3 align-items-center">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-image me-1"></i>Defect Image <span class="text-danger">*</span>
                                         </label>
@@ -183,10 +199,17 @@
                                                  style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #dee2e6;">
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-6">
                                         <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
                                         <input type="text" name="defects[0][description]" class="form-control"
                                                placeholder="e.g. Cracked screen, Scratches on back" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold text-danger">
+                                            <i class="fas fa-minus-circle me-1"></i>Deduction (₹)
+                                        </label>
+                                        <input type="number" name="defects[0][deduction_amount]" class="form-control"
+                                               value="0" min="0" placeholder="e.g. 1000">
                                     </div>
                                 </div>
                             </div>
@@ -233,7 +256,10 @@
                                     <p class="mb-0 small fw-semibold text-truncate" title="{{ $defect->description }}">
                                         {{ $defect->description }}
                                     </p>
-                                    <small class="text-primary">
+                                    @if(($defect->deduction_amount ?? 0) > 0)
+                                    <span class="badge bg-danger mt-1">-₹{{ number_format($defect->deduction_amount) }}</span>
+                                    @endif
+                                    <small class="text-primary d-block mt-1">
                                         <i class="fas fa-arrow-right me-1"></i>View Sections
                                     </small>
                                 </div>
@@ -245,7 +271,8 @@
                                         onclick="event.stopPropagation()"
                                         data-id="{{ $defect->id }}"
                                         data-desc="{{ addslashes($defect->description) }}"
-                                        data-img="{{ asset('storage/'.$defect->image) }}">
+                                        data-img="{{ asset('storage/'.$defect->image) }}"
+                                        data-deduction="{{ $defect->deduction_amount ?? 0 }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form action="{{ route('brands.models.variants.questions.defects.destroy', $defect->id) }}"
@@ -292,7 +319,7 @@
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="row g-3 align-items-center">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-image me-1"></i>Problem Image <span class="text-danger">*</span>
                                         </label>
@@ -304,10 +331,17 @@
                                                  style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #dee2e6;">
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-6">
                                         <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
                                         <input type="text" name="problems[0][description]" class="form-control"
                                                placeholder="e.g. Battery draining fast, Speaker not working" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold text-danger">
+                                            <i class="fas fa-minus-circle me-1"></i>Deduction (₹)
+                                        </label>
+                                        <input type="number" name="problems[0][deduction_amount]" class="form-control"
+                                               value="0" min="0" placeholder="e.g. 500">
                                     </div>
                                 </div>
                             </div>
@@ -348,12 +382,16 @@
                                    title="{{ $problem->description }}">
                                     {{ $problem->description }}
                                 </p>
+                                @if(($problem->deduction_amount ?? 0) > 0)
+                                <span class="badge bg-danger mt-1">-₹{{ number_format($problem->deduction_amount) }}</span>
+                                @endif
                             </div>
                             <div class="card-footer p-1 bg-transparent border-top">
                                 <button type="button" class="btn btn-warning btn-sm btn-edit-problem"
                                         data-id="{{ $problem->id }}"
                                         data-desc="{{ addslashes($problem->description) }}"
-                                        data-img="{{ asset('storage/'.$problem->image) }}">
+                                        data-img="{{ asset('storage/'.$problem->image) }}"
+                                        data-deduction="{{ $problem->deduction_amount ?? 0 }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form action="{{ route('brands.models.variants.problems.destroy', $problem->id) }}"
@@ -414,6 +452,13 @@
                                    class="form-control border-danger" required>
                         </div>
                     </div>
+                    <div class="mt-3">
+                        <label class="form-label fw-semibold text-danger">
+                            <i class="fas fa-minus-circle me-1"></i>Deduction if No (₹)
+                        </label>
+                        <input type="number" name="deduction_amount" id="editQuestionDeduction"
+                               class="form-control" min="0" value="0">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -451,6 +496,12 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
                         <input type="text" name="description" id="editDefectDesc" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-danger">
+                            <i class="fas fa-minus-circle me-1"></i>Deduction (₹)
+                        </label>
+                        <input type="number" name="deduction_amount" id="editDefectDeduction" class="form-control" min="0" value="0">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -490,6 +541,12 @@
                         <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
                         <input type="text" name="description" id="editProblemDesc" class="form-control" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-danger">
+                            <i class="fas fa-minus-circle me-1"></i>Deduction (₹)
+                        </label>
+                        <input type="number" name="deduction_amount" id="editProblemDeduction" class="form-control" min="0" value="0">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -504,8 +561,6 @@
 
 <div class="container-fluid py-4">
   <div class="page-inner">
-
-    
 
     {{-- Info Card --}}
     <div class="card mb-4 shadow-sm border-0" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">
@@ -564,10 +619,17 @@
                     <input type="text" name="items[0][description]" class="form-control"
                            placeholder="e.g. Original Charger of Device" required>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <label class="form-label fw-semibold">Small Description</label>
                     <input type="text" name="items[0][small_description]" class="form-control"
                            placeholder="Optional sub-text shown below card">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label fw-semibold text-danger">
+                      <i class="fas fa-minus-circle me-1"></i>Missing Deduction (₹)
+                    </label>
+                    <input type="number" name="items[0][deduction_amount]" class="form-control"
+                           value="0" min="0" placeholder="e.g. 500">
                   </div>
                 </div>
               </div>
@@ -604,6 +666,7 @@
                 <th width="90">Image</th>
                 <th>Description</th>
                 <th>Small Description</th>
+                <th width="140" class="text-center">Missing Deduction (₹)</th>
                 <th width="130">Actions</th>
               </tr>
             </thead>
@@ -618,12 +681,20 @@
                 </td>
                 <td class="fw-semibold">{{ $acc->description }}</td>
                 <td class="text-muted small">{{ $acc->small_description ?? '—' }}</td>
+                <td class="text-center">
+                  @if(($acc->deduction_amount ?? 0) > 0)
+                  <span class="badge bg-danger px-2 py-1">-₹{{ number_format($acc->deduction_amount) }}</span>
+                  @else
+                  <span class="badge bg-secondary px-2 py-1">₹0</span>
+                  @endif
+                </td>
                 <td>
                   <button type="button" class="btn btn-warning btn-sm btn-edit-acc"
                           data-id="{{ $acc->id }}"
                           data-description="{{ addslashes($acc->description) }}"
                           data-small="{{ addslashes($acc->small_description ?? '') }}"
-                          data-image="{{ asset('storage/' . $acc->image) }}">
+                          data-image="{{ asset('storage/' . $acc->image) }}"
+                          data-deduction="{{ $acc->deduction_amount ?? 0 }}">
                     <i class="fas fa-edit"></i>
                   </button>
                   <form action="{{ route('admin.accessories.destroy', $acc->id) }}"
@@ -681,6 +752,10 @@
             <input type="text" name="small_description" id="editAccSmall" class="form-control"
                    placeholder="Optional sub-text">
           </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-danger"><i class="fas fa-minus-circle me-1"></i>Missing Deduction (₹)</label>
+            <input type="number" name="deduction_amount" id="editAccDeduction" class="form-control" min="0" value="0">
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -725,10 +800,12 @@ document.addEventListener('DOMContentLoaded', function () {
             '<input type="text" name="questions[' + questionIndex + '][question]" class="form-control" placeholder="e.g. Is the battery draining fast?" required></div>' +
             '<div class="col-md-6"><label class="form-label fw-semibold">Small Description</label>' +
             '<input type="text" name="questions[' + questionIndex + '][small_description]" class="form-control" placeholder="Optional hint or sub-text"></div>' +
-            '<div class="col-md-6"><label class="form-label fw-semibold text-success"><i class="fas fa-check-circle me-1"></i>Yes Answer <span class="text-danger">*</span></label>' +
+            '<div class="col-md-4"><label class="form-label fw-semibold text-success"><i class="fas fa-check-circle me-1"></i>Yes Answer <span class="text-danger">*</span></label>' +
             '<input type="text" name="questions[' + questionIndex + '][yes_answer]" class="form-control border-success" value="Yes" required></div>' +
-            '<div class="col-md-6"><label class="form-label fw-semibold text-danger"><i class="fas fa-times-circle me-1"></i>No Answer <span class="text-danger">*</span></label>' +
+            '<div class="col-md-4"><label class="form-label fw-semibold text-danger"><i class="fas fa-times-circle me-1"></i>No Answer <span class="text-danger">*</span></label>' +
             '<input type="text" name="questions[' + questionIndex + '][no_answer]" class="form-control border-danger" value="No" required></div>' +
+            '<div class="col-md-4"><label class="form-label fw-semibold text-warning"><i class="fas fa-minus-circle me-1"></i>Deduction if No (₹)</label>' +
+            '<input type="number" name="questions[' + questionIndex + '][deduction_amount]" class="form-control" value="0" min="0" placeholder="e.g. 500"></div>' +
             '</div></div>';
         container.insertAdjacentHTML('beforeend', html);
         questionIndex++;
@@ -764,11 +841,13 @@ document.addEventListener('DOMContentLoaded', function () {
         var html = '<div class="defect-row border rounded p-3 mb-3 bg-white position-relative">' +
             '<button type="button" class="btn btn-sm btn-outline-danger remove-defect-row position-absolute" style="top:8px;right:8px;"><i class="fas fa-times"></i></button>' +
             '<div class="row g-3 align-items-center">' +
-            '<div class="col-md-4"><label class="form-label fw-semibold"><i class="fas fa-image me-1"></i>Defect Image <span class="text-danger">*</span></label>' +
+            '<div class="col-md-3"><label class="form-label fw-semibold"><i class="fas fa-image me-1"></i>Defect Image <span class="text-danger">*</span></label>' +
             '<input type="file" name="defects[' + defectIndex + '][image]" class="form-control defect-image-input" accept="image/*" required>' +
             '<div class="mt-2 defect-preview" style="display:none;"><img src="" alt="preview" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #dee2e6;"></div></div>' +
-            '<div class="col-md-8"><label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>' +
+            '<div class="col-md-6"><label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>' +
             '<input type="text" name="defects[' + defectIndex + '][description]" class="form-control" placeholder="e.g. Cracked screen" required></div>' +
+            '<div class="col-md-3"><label class="form-label fw-semibold text-danger"><i class="fas fa-minus-circle me-1"></i>Deduction (₹)</label>' +
+            '<input type="number" name="defects[' + defectIndex + '][deduction_amount]" class="form-control" value="0" min="0" placeholder="e.g. 1000"></div>' +
             '</div></div>';
         container.insertAdjacentHTML('beforeend', html);
         defectIndex++;
@@ -822,11 +901,13 @@ document.addEventListener('DOMContentLoaded', function () {
         var html = '<div class="problem-row border rounded p-3 mb-3 bg-white position-relative">' +
             '<button type="button" class="btn btn-sm btn-outline-danger remove-problem-row position-absolute" style="top:8px;right:8px;"><i class="fas fa-times"></i></button>' +
             '<div class="row g-3 align-items-center">' +
-            '<div class="col-md-4"><label class="form-label fw-semibold"><i class="fas fa-image me-1"></i>Problem Image <span class="text-danger">*</span></label>' +
+            '<div class="col-md-3"><label class="form-label fw-semibold"><i class="fas fa-image me-1"></i>Problem Image <span class="text-danger">*</span></label>' +
             '<input type="file" name="problems[' + problemIndex + '][image]" class="form-control problem-image-input" accept="image/*" required>' +
             '<div class="mt-2 problem-preview" style="display:none;"><img src="" alt="preview" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #dee2e6;"></div></div>' +
-            '<div class="col-md-8"><label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>' +
+            '<div class="col-md-6"><label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>' +
             '<input type="text" name="problems[' + problemIndex + '][description]" class="form-control" placeholder="e.g. Battery draining fast" required></div>' +
+            '<div class="col-md-3"><label class="form-label fw-semibold text-danger"><i class="fas fa-minus-circle me-1"></i>Deduction (₹)</label>' +
+            '<input type="number" name="problems[' + problemIndex + '][deduction_amount]" class="form-control" value="0" min="0" placeholder="e.g. 500"></div>' +
             '</div></div>';
         container.insertAdjacentHTML('beforeend', html);
         problemIndex++;
@@ -873,6 +954,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('editSmallDesc').value = this.dataset.desc;
             document.getElementById('editYesAnswer').value = this.dataset.yes;
             document.getElementById('editNoAnswer').value  = this.dataset.no;
+            document.getElementById('editQuestionDeduction').value = this.dataset.deduction || 0;
             new bootstrap.Modal(document.getElementById('editQuestionModal')).show();
         });
     });
@@ -885,6 +967,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('editDefectForm').action          = defectUpdateBase.replace('DID', this.dataset.id);
             document.getElementById('editDefectDesc').value           = this.dataset.desc;
             document.getElementById('editDefectCurrentImg').src       = this.dataset.img;
+            document.getElementById('editDefectDeduction').value      = this.dataset.deduction || 0;
             document.getElementById('editDefectImageInput').value     = '';
             new bootstrap.Modal(document.getElementById('editDefectModal')).show();
         });
@@ -906,6 +989,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('editProblemForm').action          = problemUpdateBase.replace('PID', this.dataset.id);
             document.getElementById('editProblemDesc').value           = this.dataset.desc;
             document.getElementById('editProblemCurrentImg').src       = this.dataset.img;
+            document.getElementById('editProblemDeduction').value      = this.dataset.deduction || 0;
             document.getElementById('editProblemImageInput').value     = '';
             new bootstrap.Modal(document.getElementById('editProblemModal')).show();
         });
@@ -947,8 +1031,10 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="mt-2" id="preview-' + idx + '"></div></div>' +
       '<div class="col-md-4"><label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>' +
       '<input type="text" name="items[' + idx + '][description]" class="form-control" placeholder="e.g. Original Box with same IMEI" required></div>' +
-      '<div class="col-md-4"><label class="form-label fw-semibold">Small Description</label>' +
+      '<div class="col-md-3"><label class="form-label fw-semibold">Small Description</label>' +
       '<input type="text" name="items[' + idx + '][small_description]" class="form-control" placeholder="Optional sub-text"></div>' +
+      '<div class="col-md-2"><label class="form-label fw-semibold text-danger"><i class="fas fa-minus-circle me-1"></i>Missing Deduction (₹)</label>' +
+      '<input type="number" name="items[' + idx + '][deduction_amount]" class="form-control" value="0" min="0" placeholder="e.g. 500"></div>' +
       '</div></div>';
     document.getElementById('accItemsContainer').insertAdjacentHTML('beforeend', html);
     accIndex++;
@@ -973,6 +1059,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('editAccForm').action = accUpdateBase.replace('AID', id);
       document.getElementById('editAccDesc').value  = this.getAttribute('data-description');
       document.getElementById('editAccSmall').value = this.getAttribute('data-small');
+      document.getElementById('editAccDeduction').value = this.getAttribute('data-deduction') || 0;
       document.getElementById('editCurrentImg').src = this.getAttribute('data-image');
       document.getElementById('editImgPreview').innerHTML = '';
       new bootstrap.Modal(document.getElementById('editAccModal')).show();

@@ -10,6 +10,7 @@ class VariantDefect extends Model
         'mobile_variant_id',
         'image',
         'description',
+        'deduction_amount',
         'sort_order',
     ];
 

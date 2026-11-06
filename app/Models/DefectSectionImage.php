@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DefectSectionImage extends Model
 {
     use HasFactory;
-      protected $fillable = ['defect_section_id', 'image', 'description', 'order'];
+      protected $fillable = ['defect_section_id', 'image', 'description', 'deduction_amount', 'order'];
  
     public function section()
     {

@@ -166,12 +166,28 @@ body { background:#f7f8fa; font-family:'Nunito Sans',sans-serif; }
                         <span class="label">Base Price</span>
                         <span class="val">₹{{ number_format($data['base_price']) }}</span>
                     </div>
-                    @if(!empty($data['deduction']) && $data['deduction'] > 0)
-                    <div class="quote-row">
-                        <span class="label">Condition Deduction</span>
-                        <span class="val" style="color:#e53935;">−₹{{ number_format($data['deduction']) }}</span>
+
+                    @if(!empty($data['deductions_breakdown']))
+                        @foreach($data['deductions_breakdown'] as $item)
+                        <div class="quote-row" style="padding:6px 0; font-size:13.5px;">
+                            <span class="label" style="color:#555;"><i class="fas fa-minus-circle" style="color:#e53935; font-size:10px; margin-right:4px;"></i>{{ $item['name'] }}</span>
+                            <span class="val" style="color:#e53935; font-weight:700;">−₹{{ number_format($item['amount']) }}</span>
+                        </div>
+                        @endforeach
+                    @elseif(!empty($data['deduction']) && $data['deduction'] > 0)
+                        <div class="quote-row">
+                            <span class="label">Condition Deduction</span>
+                            <span class="val" style="color:#e53935;">−₹{{ number_format($data['deduction']) }}</span>
+                        </div>
+                    @endif
+
+                    @if(!empty($data['deduction']) && $data['deduction'] > 0 && !empty($data['deductions_breakdown']))
+                    <div class="quote-row" style="border-top:1px dashed #e0e0e0; margin-top:6px; padding-top:10px;">
+                        <span class="label" style="font-weight:700; color:#333;">Total Deductions</span>
+                        <span class="val" style="color:#e53935; font-weight:800;">−₹{{ number_format($data['deduction']) }}</span>
                     </div>
                     @endif
+
                     <div class="quote-row total">
                         <span>Total Amount</span>
                         <span class="val">₹{{ number_format($data['price']) }}</span>
@@ -196,16 +212,6 @@ body { background:#f7f8fa; font-family:'Nunito Sans',sans-serif; }
 
         {{-- Sidebar --}}
         <div class="quote-sidebar">
-            <!-- @php $verified = session('laptop_otp_verified'); @endphp
-            @if($verified)
-            <div class="quote-verified-card" style="margin-bottom:16px;">
-                <svg width="18" height="18" fill="none" stroke="#2e7d32" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path d="M20 6L9 17l-5-5"/>
-                </svg>
-                Logged in as {{ $verified['name'] }}
-            </div>
-            @endif -->
-
             <div class="quote-trust-card">
                 <div class="quote-trust-title">Why sell with us?</div>
                 <div class="trust-item">

@@ -229,14 +229,33 @@
         {{-- ── RIGHT SIDEBAR ── --}}
         <div class="col-lg-4">
 
-            {{-- ✅ Price & Order Info (replaces old price-only card) --}}
+            {{-- ✅ Price & Order Info --}}
             <div class="card mb-4">
                 <div class="card-body text-center">
                     <h5 class="fw-bold mb-3">Order Summary</h5>
-                    <div class="p-4 bg-success text-white rounded mb-3">
+                    <div class="p-3 bg-success text-white rounded mb-3">
                         <div class="small opacity-75">Final Quote</div>
                         <div class="fs-2 fw-bold">₹{{ number_format($evaluation->estimated_price, 0) }}</div>
                     </div>
+
+                    {{-- Base Price & Deduction Breakdown --}}
+                    @php
+                        $basePrice = $evaluation->base_price ?? $evaluation->variant->price ?? 0;
+                        $totalDeduction = $evaluation->total_deduction ?? 0;
+                    @endphp
+                    @if($basePrice > 0)
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted" style="font-size:13px;">Base Price</span>
+                        <span class="fw-bold text-dark">₹{{ number_format($basePrice, 0) }}</span>
+                    </div>
+                    @endif
+
+                    @if($totalDeduction > 0)
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-danger" style="font-size:13px;">Total Deductions</span>
+                        <span class="fw-bold text-danger">-₹{{ number_format($totalDeduction, 0) }}</span>
+                    </div>
+                    @endif
 
                     {{-- Payment Method --}}
                     @php
@@ -284,7 +303,7 @@
                 </div>
             </div>
 
-            {{-- ✅ Pickup Address card (new) --}}
+            {{-- ✅ Pickup Address card --}}
             <div class="card">
                 <div class="card-body">
                     <h5 class="fw-bold mb-3">

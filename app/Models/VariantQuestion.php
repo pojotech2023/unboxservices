@@ -12,6 +12,7 @@ class VariantQuestion extends Model
         'small_description',
         'yes_answer',
         'no_answer',
+        'deduction_amount',
         'sort_order',
     ];
 

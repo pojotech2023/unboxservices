@@ -13,11 +13,12 @@ class DefectSectionController extends Controller
     public function store(Request $request, VariantDefect $defect)
 {
     $request->validate([
-        'title'               => 'required|string|max:255',
-        'description'         => 'nullable|string|max:500',
-        'images'              => 'required|array|min:1',
-        'images.*.image'      => 'required|image|max:2048',
-        'images.*.description'=> 'required|string|max:255',
+        'title'                     => 'required|string|max:255',
+        'description'               => 'nullable|string|max:500',
+        'images'                    => 'required|array|min:1',
+        'images.*.image'            => 'required|image|max:2048',
+        'images.*.description'      => 'required|string|max:255',
+        'images.*.deduction_amount' => 'nullable|numeric|min:0',
     ]);
  
     $section = $defect->sections()->create([
@@ -28,8 +29,9 @@ class DefectSectionController extends Controller
     foreach ($request->images as $imgData) {
         $path = $imgData['image']->store('defect-sections', 'public');
         $section->images()->create([
-            'image'       => $path,
-            'description' => $imgData['description'],
+            'image'            => $path,
+            'description'      => $imgData['description'],
+            'deduction_amount' => $imgData['deduction_amount'] ?? 0,
         ]);
     }
  

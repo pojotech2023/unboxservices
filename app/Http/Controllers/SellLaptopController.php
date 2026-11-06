@@ -132,31 +132,188 @@ class SellLaptopController extends Controller
     /**
      * Calculate the correct price based on evaluation criteria.
      */
-    private function calculateFinalPrice(LaptopModel $model, ?LaptopVariant $variant, Request $request): float
+    public function calculateLaptopEvaluation(LaptopModel $model, ?LaptopVariant $variant, Request $request): array
     {
         $basePrice = $variant ? (float) $variant->price : (float) $model->price;
-        $pricing   = $model->evaluationPricing;
+        $breakdown = [];
 
-        if (!$pricing) {
-            $deduction = (int) $request->input('deduction', 0);
-            return max(0, $basePrice - $deduction);
+        // 1. Power On: if 'no', check for deduction
+        if ($request->input('power_on') === 'no') {
+            $powerOption = \App\Models\LaptopQuestionOption::where('label', 'like', '%does not turn on%')
+                ->orWhere('label', 'like', '%power on - no%')
+                ->first();
+            $amt = $powerOption ? (float) $powerOption->deduction : 0;
+            if ($amt > 0) {
+                $breakdown[] = [
+                    'name'   => 'Device Does Not Turn On',
+                    'amount' => $amt,
+                ];
+            }
         }
 
-        $powerOn = $request->input('power_on', 'yes');
-
-        if ($powerOn === 'no') {
-            return (float) $pricing->full_negative_price;
+        // 2. Physical condition options from $request->input('answers')
+        $physicalRaw = $request->input('answers');
+        if ($physicalRaw) {
+            $physicalAns = is_array($physicalRaw) ? $physicalRaw : json_decode($physicalRaw, true);
+            if (is_array($physicalAns)) {
+                $selectedOptIds = [];
+                foreach ($physicalAns as $qId => $opts) {
+                    if (is_array($opts)) {
+                        foreach ($opts as $k => $v) {
+                            if (is_numeric($v)) {
+                                $selectedOptIds[] = (int) $v;
+                            } elseif (is_numeric($k)) {
+                                $selectedOptIds[] = (int) $k;
+                            }
+                        }
+                    } elseif (is_numeric($opts)) {
+                        $selectedOptIds[] = (int) $opts;
+                    }
+                }
+                if (!empty($selectedOptIds)) {
+                    $options = \App\Models\LaptopQuestionOption::whereIn('id', $selectedOptIds)->get();
+                    foreach ($options as $opt) {
+                        $amt = (float) $opt->deduction;
+                        if ($amt > 0) {
+                            $breakdown[] = [
+                                'name'   => $opt->label,
+                                'amount' => $amt,
+                            ];
+                        }
+                    }
+                }
+            }
         }
 
-        $hasDeviceCondition = $request->filled('dc') && trim($request->input('dc')) !== '';
-        $physicalDeduction  = (int) $request->input('deduction', 0);
-        $hasPhysicalIssues  = $physicalDeduction > 0;
+        $extractValues = function($input) {
+            if (empty($input)) return [];
+            if (is_array($input)) return array_values(array_filter(array_map('trim', $input)));
+            return array_values(array_filter(array_map('trim', explode(',', (string) $input))));
+        };
 
-        if (!$hasDeviceCondition && !$hasPhysicalIssues) {
-            return (float) $pricing->full_positive_price;
+        // 3. Device condition (dc) labels
+        if ($request->filled('dc')) {
+            $dcVals = $extractValues($request->input('dc'));
+            if (!empty($dcVals)) {
+                $options = \App\Models\LaptopQuestionOption::whereIn('label', $dcVals)
+                    ->orWhereIn('id', array_filter($dcVals, 'is_numeric'))
+                    ->get();
+                foreach ($options as $opt) {
+                    $amt = (float) $opt->deduction;
+                    if ($amt > 0) {
+                        $breakdown[] = [
+                            'name'   => $opt->label,
+                            'amount' => $amt,
+                        ];
+                    }
+                }
+            }
         }
 
-        return (float) $pricing->mixed_price;
+        // 4. Screen condition (sc) labels
+        if ($request->filled('sc')) {
+            $scVals = $extractValues($request->input('sc'));
+            if (!empty($scVals)) {
+                $options = \App\Models\LaptopQuestionOption::whereIn('label', $scVals)
+                    ->orWhereIn('id', array_filter($scVals, 'is_numeric'))
+                    ->get();
+                foreach ($options as $opt) {
+                    $amt = (float) $opt->deduction;
+                    if ($amt > 0) {
+                        $breakdown[] = [
+                            'name'   => $opt->label,
+                            'amount' => $amt,
+                        ];
+                    }
+                }
+            }
+        }
+
+        // 5. Accessories (acc) labels
+        if ($request->filled('acc')) {
+            $accVals = $extractValues($request->input('acc'));
+            if (!empty($accVals)) {
+                $options = \App\Models\LaptopQuestionOption::whereIn('label', $accVals)
+                    ->orWhereIn('id', array_filter($accVals, 'is_numeric'))
+                    ->get();
+                foreach ($options as $opt) {
+                    $amt = (float) $opt->deduction;
+                    if ($amt > 0) {
+                        $breakdown[] = [
+                            'name'   => $opt->label,
+                            'amount' => $amt,
+                        ];
+                    }
+                }
+            }
+        }
+
+        // 6. Device Age (age) label
+        if ($request->filled('age')) {
+            $ageLabel = trim($request->input('age'));
+            $opt = \App\Models\LaptopQuestionOption::where('label', $ageLabel)->first();
+            if ($opt && (float) $opt->deduction > 0) {
+                $breakdown[] = [
+                    'name'   => 'Age: ' . $opt->label,
+                    'amount' => (float) $opt->deduction,
+                ];
+            }
+        }
+
+        // 7. Additional Features (af)
+        if ($request->filled('af')) {
+            $afAnswers = json_decode(base64_decode($request->af), true) ?? [];
+            if (is_array($afAnswers)) {
+                $afLabels = array_filter(array_column($afAnswers, 'a'));
+                if (!empty($afLabels)) {
+                    $options = \App\Models\LaptopQuestionOption::whereIn('label', $afLabels)->get();
+                    foreach ($options as $opt) {
+                        $amt = (float) $opt->deduction;
+                        if ($amt > 0) {
+                            $breakdown[] = [
+                                'name'   => $opt->label,
+                                'amount' => $amt,
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        // De-duplicate any breakdown item if needed
+        $uniqueBreakdown = [];
+        $seen = [];
+        foreach ($breakdown as $item) {
+            $key = $item['name'] . '_' . $item['amount'];
+            if (!isset($seen[$key])) {
+                $seen[$key] = true;
+                $uniqueBreakdown[] = $item;
+            }
+        }
+
+        $clientDeduction = (float) $request->input('deduction', 0);
+        $totalDeduction = (float) array_sum(array_column($uniqueBreakdown, 'amount'));
+        if ($totalDeduction == 0 && $clientDeduction > 0) {
+            $totalDeduction = $clientDeduction;
+            $uniqueBreakdown[] = [
+                'name'   => 'Condition Deductions',
+                'amount' => $clientDeduction,
+            ];
+        }
+
+        $finalPrice = max(0, $basePrice - $totalDeduction);
+
+        return [
+            'base_price'           => $basePrice,
+            'total_deduction'      => $totalDeduction,
+            'final_price'          => $finalPrice,
+            'deductions_breakdown' => $uniqueBreakdown,
+        ];
+    }
+
+    private function calculateFinalPrice(LaptopModel $model, ?LaptopVariant $variant, Request $request): float
+    {
+        return $this->calculateLaptopEvaluation($model, $variant, $request)['final_price'];
     }
 
     // ==================== BROWSE PAGES ====================
@@ -437,23 +594,26 @@ class SellLaptopController extends Controller
         $model   = LaptopModel::where('slug', $modelSlug)->where('laptop_brand_id', $brand->id)->firstOrFail();
         $variant = $request->filled('variant') ? $model->variants()->find($request->variant) : null;
 
-        $basePrice      = $variant ? (float) $variant->price : (float) $model->price;
-        $finalPrice     = $this->calculateFinalPrice($model, $variant, $request);
-        $totalDeduction = max(0, $basePrice - $finalPrice);
+        $calc           = $this->calculateLaptopEvaluation($model, $variant, $request);
+        $basePrice      = $calc['base_price'];
+        $finalPrice     = $calc['final_price'];
+        $totalDeduction = $calc['total_deduction'];
+        $breakdown      = $calc['deductions_breakdown'];
 
         $answers = [
-            'power_on'            => $request->input('power_on'),
-            'processor'           => $request->input('processor'),
-            'ram'                 => $request->input('ram'),
-            'storage'             => $request->input('storage'),
-            'additional_features' => $request->filled('af') ? json_decode(base64_decode($request->af), true) : [],
-            'device_condition'    => $request->filled('dc') ? explode(',', $request->dc) : [],
-            'screen_condition'    => $request->input('sc'),
-            'accessories'         => $request->filled('acc') ? explode(',', $request->acc) : [],
-            'device_age'          => $request->input('age'),
-            'physical_condition'  => json_decode($request->input('answers', '{}'), true),
-            'total_deduction'     => $totalDeduction,
-            'base_price'          => $basePrice,
+            'power_on'             => $request->input('power_on'),
+            'processor'            => $request->input('processor'),
+            'ram'                  => $request->input('ram'),
+            'storage'              => $request->input('storage'),
+            'additional_features'  => $request->filled('af') ? json_decode(base64_decode($request->af), true) : [],
+            'device_condition'     => $request->filled('dc') ? explode(',', $request->dc) : [],
+            'screen_condition'     => $request->input('sc'),
+            'accessories'          => $request->filled('acc') ? explode(',', $request->acc) : [],
+            'device_age'           => $request->input('age'),
+            'physical_condition'   => json_decode($request->input('answers', '{}'), true),
+            'total_deduction'      => $totalDeduction,
+            'base_price'           => $basePrice,
+            'deductions_breakdown' => $breakdown,
         ];
 
         $evaluation = LaptopDeviceEvaluation::create([
@@ -473,18 +633,19 @@ class SellLaptopController extends Controller
 
         session([
             'laptop_eval_success' => [
-                'evaluation_id' => $evaluation->id,
-                'name'          => $name,
-                'mobile'        => $mobile,
-                'brand'         => $brand->name,
-                'brand_slug'    => $brand->slug,
-                'model'         => $model->name,
-                'model_slug'    => $model->slug,
-                'model_image'   => $model->image,
-                'variant'       => $variant ? "{$variant->storage} / {$variant->ram}" : null,
-                'price'         => $finalPrice,
-                'base_price'    => $basePrice,
-                'deduction'     => $totalDeduction,
+                'evaluation_id'        => $evaluation->id,
+                'name'                 => $name,
+                'mobile'               => $mobile,
+                'brand'                => $brand->name,
+                'brand_slug'           => $brand->slug,
+                'model'                => $model->name,
+                'model_slug'           => $model->slug,
+                'model_image'          => $model->image,
+                'variant'              => $variant ? "{$variant->storage} / {$variant->ram}" : null,
+                'price'                => $finalPrice,
+                'base_price'           => $basePrice,
+                'deduction'            => $totalDeduction,
+                'deductions_breakdown' => $breakdown,
             ],
         ]);
 
@@ -499,6 +660,13 @@ class SellLaptopController extends Controller
 
         if (!$data || ($data['brand_slug'] ?? '') !== $brandSlug) {
             return redirect()->route('sell.laptop.index');
+        }
+
+        if (empty($data['deductions_breakdown'])) {
+            $evalRecord = LaptopDeviceEvaluation::find($data['evaluation_id'] ?? 0);
+            if ($evalRecord && isset($evalRecord->answers['deductions_breakdown'])) {
+                $data['deductions_breakdown'] = $evalRecord->answers['deductions_breakdown'];
+            }
         }
 
         $brand = LaptopBrand::where('slug', $brandSlug)->firstOrFail();
@@ -614,23 +782,33 @@ class SellLaptopController extends Controller
         $model   = LaptopModel::where('slug', $modelSlug)->where('laptop_brand_id', $brand->id)->firstOrFail();
         $variant = $request->filled('variant') ? $model->variants()->find($request->variant) : null;
 
-        $basePrice  = $variant ? (float) $variant->price : (float) $model->price;
-        $pricing    = $model->evaluationPricing;
-        $finalPrice = $pricing ? (float) $pricing->full_negative_price : $basePrice;
+        $calc           = $this->calculateLaptopEvaluation($model, $variant, $request);
+        $basePrice      = $calc['base_price'];
+        $finalPrice     = $calc['final_price'];
+        $totalDeduction = $calc['total_deduction'];
+        $breakdown      = $calc['deductions_breakdown'];
+
+        if (empty($breakdown)) {
+            $deductAmt = min($basePrice * 0.5, 3000);
+            $totalDeduction = $deductAmt;
+            $finalPrice     = max(0, $basePrice - $totalDeduction);
+            $breakdown      = [['name' => 'Device Not Powering On', 'amount' => $totalDeduction]];
+        }
 
         $answers = [
-            'power_on'            => 'no',
-            'processor'           => $request->input('processor'),
-            'ram'                 => $request->input('ram'),
-            'storage'             => $request->input('storage'),
-            'additional_features' => [],
-            'device_condition'    => [],
-            'screen_condition'    => null,
-            'accessories'         => [],
-            'device_age'          => null,
-            'physical_condition'  => [],
-            'total_deduction'     => 0,
-            'base_price'          => $basePrice,
+            'power_on'             => 'no',
+            'processor'            => $request->input('processor'),
+            'ram'                  => $request->input('ram'),
+            'storage'              => $request->input('storage'),
+            'additional_features'  => [],
+            'device_condition'     => [],
+            'screen_condition'     => null,
+            'accessories'          => [],
+            'device_age'           => null,
+            'physical_condition'   => [],
+            'total_deduction'      => $totalDeduction,
+            'base_price'           => $basePrice,
+            'deductions_breakdown' => $breakdown,
         ];
 
         $evaluation = LaptopDeviceEvaluation::create([
@@ -641,7 +819,7 @@ class SellLaptopController extends Controller
             'laptop_variant_id' => $variant?->id,
             'answers'           => $answers,
             'base_price'        => $basePrice,
-            'total_deduction'   => 0,
+            'total_deduction'   => $totalDeduction,
             'estimated_price'   => $finalPrice,
             'status'            => 'confirmed',
             'otp_verified'      => true,
@@ -650,19 +828,20 @@ class SellLaptopController extends Controller
 
         session([
             'laptop_eval_success' => [
-                'evaluation_id' => $evaluation->id,
-                'name'          => $verifiedCustomer['name'],
-                'mobile'        => $verifiedCustomer['mobile'],
-                'brand'         => $brand->name,
-                'brand_slug'    => $brand->slug,
-                'model'         => $model->name,
-                'model_slug'    => $model->slug,
-                'model_image'   => $model->image,
-                'variant'       => $variant ? "{$variant->storage} / {$variant->ram}" : null,
-                'price'         => $finalPrice,
-                'base_price'    => $basePrice,
-                'deduction'     => 0,
-                'message'       => 'Our team member will come to your address and check to give you the exact price.',
+                'evaluation_id'        => $evaluation->id,
+                'name'                 => $verifiedCustomer['name'],
+                'mobile'               => $verifiedCustomer['mobile'],
+                'brand'                => $brand->name,
+                'brand_slug'           => $brand->slug,
+                'model'                => $model->name,
+                'model_slug'           => $model->slug,
+                'model_image'          => $model->image,
+                'variant'              => $variant ? "{$variant->storage} / {$variant->ram}" : null,
+                'price'                => $finalPrice,
+                'base_price'           => $basePrice,
+                'deduction'            => $totalDeduction,
+                'deductions_breakdown' => $breakdown,
+                'message'              => 'Our team member will come to your address and check to give you the exact price.',
             ],
         ]);
 

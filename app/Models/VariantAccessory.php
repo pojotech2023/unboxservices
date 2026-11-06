@@ -13,6 +13,7 @@ class VariantAccessory extends Model
     protected $fillable = [
         'description',
         'small_description',
+        'deduction_amount',
         'image',
         'sort_order',
     ];

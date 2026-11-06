@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class VariantProblem extends Model
 {
     use HasFactory;
-     protected $fillable = ['variant_id', 'image', 'description', 'order'];
+     protected $fillable = ['variant_id', 'mobile_variant_id', 'image', 'description', 'deduction_amount', 'order'];
  
     public function variant()
     {
